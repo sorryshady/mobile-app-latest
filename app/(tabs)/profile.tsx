@@ -19,6 +19,7 @@ import CustomButton from "@/components/custom-button";
 import ImagePickerComponent from "@/components/image-picker";
 import FormField from "@/components/form-field";
 import CustomDropDown from "@/components/custom-drop-down";
+import ErrorMessage from "@/components/error-message";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
@@ -65,7 +66,7 @@ const Profile = () => {
   }, [completeUserData]);
 
   const logout = async () => {
-    await removeToken({ key: "sessionToken" });
+    await removeToken({ key: "session" });
     setUser(null);
     setIsLoggedIn(false);
     router.push("/sign-in");
@@ -106,15 +107,18 @@ const Profile = () => {
       const data = await response.json();
       if (data?.error) {
         setError(data.error);
+        return;
       }
       if (response.ok) {
         const updatedUser = await getCompleteUser();
         setCompleteUserData(updatedUser);
         setIsEditing(false);
+      } else {
+        setError("Failed to update user data");
       }
     } catch (error) {
       console.error("Error updating user data:", error);
-      setError("Failed to update user data");
+      setError("An unexpected error occurred");
     }
   };
 
@@ -279,9 +283,7 @@ const Profile = () => {
                   }
                 }}
               >
-                <Text className="text-accent">
-                  {isEditing ? "Save" : "Edit"}
-                </Text>
+                {!isEditing && <Text className="text-accent">Edit</Text>}
               </TouchableOpacity>
             </View>
             <View className="bg-gray-50 rounded-xl p-4 space-y-4">
@@ -372,6 +374,18 @@ const Profile = () => {
               )}
             </View>
           </View>
+
+          {isEditing && (
+            <View className="mb-6">
+              <CustomButton
+                title="Save Changes"
+                handlePress={handleSave}
+                containerStyles="bg-[#5386A4]"
+                textStyles="text-white"
+              />
+              {error && <ErrorMessage error={error} />}
+            </View>
+          )}
 
           <CustomButton
             title="Logout"
