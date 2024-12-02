@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "cursor-aoek",
+    "jsEngine": "hermes",
     "slug": "cursor-aoek",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -14,7 +15,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "jsEngine": "jsc"
     },
     "android": {
       "adaptiveIcon": {
