@@ -69,7 +69,7 @@ const Profile = () => {
     await removeToken({ key: "session" });
     setUser(null);
     setIsLoggedIn(false);
-    router.push("/sign-in");
+    router.replace("/sign-in");
   };
 
   const handleSave = async () => {
