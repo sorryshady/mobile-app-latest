@@ -9,21 +9,32 @@ import {
 } from "react-native";
 import ReusableBackground from "@/components/reusable-background";
 import { useGlobalContext } from "@/context/global-provider";
-import { removeToken } from "@/lib/handle-session-tokens";
+import { getToken, removeToken } from "@/lib/handle-session-tokens";
 import { router } from "expo-router";
-import { CompleteUser } from "@/constants/types";
+import { CompleteUser, District } from "@/constants/types";
 import { images, icons } from "@/constants";
 import { getCompleteUser } from "@/api/user";
 import { changeTypeToText } from "@/lib/utils";
 import CustomButton from "@/components/custom-button";
 import ImagePickerComponent from "@/components/image-picker";
+import FormField from "@/components/form-field";
+import CustomDropDown from "@/components/custom-drop-down";
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
+  const [error, setError] = useState<string | null>(null);
   const [completeUserData, setCompleteUserData] = useState<CompleteUser | null>(
     null,
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [formData, setFormData] = useState({
+    personalAddress: "",
+    phoneNumber: "",
+    mobileNumber: "",
+    homeDistrict: "",
+  });
 
   useEffect(() => {
     const fetchCompleteUserData = async () => {
@@ -42,11 +53,69 @@ const Profile = () => {
     }
   }, [user?.membershipId]);
 
+  useEffect(() => {
+    if (completeUserData) {
+      setFormData({
+        personalAddress: completeUserData.personalAddress || "",
+        phoneNumber: completeUserData.phoneNumber || "",
+        mobileNumber: completeUserData.mobileNumber || "",
+        homeDistrict: completeUserData.homeDistrict || "",
+      });
+    }
+  }, [completeUserData]);
+
   const logout = async () => {
     await removeToken({ key: "sessionToken" });
     setUser(null);
     setIsLoggedIn(false);
     router.push("/sign-in");
+  };
+
+  const handleSave = async () => {
+    const hasChanges =
+      formData.personalAddress !== completeUserData?.personalAddress ||
+      formData.homeDistrict !== completeUserData?.homeDistrict ||
+      formData.phoneNumber !== completeUserData?.phoneNumber ||
+      formData.mobileNumber !== completeUserData?.mobileNumber;
+
+    if (!hasChanges) {
+      setIsEditing(false);
+      return;
+    }
+
+    try {
+      setError(null);
+      const token = await getToken({ key: "session" });
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/user/update`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            membershipId: user?.membershipId,
+            personalAddress: formData.personalAddress,
+            homeDistrict: formData.homeDistrict,
+            phoneNumber: formData.phoneNumber,
+            mobileNumber: formData.mobileNumber,
+          }),
+        },
+      );
+      const data = await response.json();
+      if (data?.error) {
+        setError(data.error);
+      }
+      if (response.ok) {
+        const updatedUser = await getCompleteUser();
+        setCompleteUserData(updatedUser);
+        setIsEditing(false);
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error);
+      setError("Failed to update user data");
+    }
   };
 
   if (isLoading) {
@@ -143,7 +212,7 @@ const Profile = () => {
             <View className="bg-gray-50 rounded-xl p-4 space-y-4">
               <InfoRow
                 label="Status"
-                value={changeTypeToText(completeUserData?.userStatus || "")}
+                value={changeTypeToText(completeUserData?.userStatus!)}
               />
               {completeUserData?.userStatus === "WORKING" && (
                 <>
@@ -195,47 +264,112 @@ const Profile = () => {
             </View>
           </View>
 
-          {/* Permanent Address */}
+          {/* Permanent Address Section */}
           <View className="mb-6">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-lg font-pbold text-white">
                 Permanent Address
               </Text>
-              <TouchableOpacity>
-                <Text className="text-accent">Edit</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  if (isEditing) {
+                    handleSave();
+                  } else {
+                    setIsEditing(true);
+                  }
+                }}
+              >
+                <Text className="text-accent">
+                  {isEditing ? "Save" : "Edit"}
+                </Text>
               </TouchableOpacity>
             </View>
             <View className="bg-gray-50 rounded-xl p-4 space-y-4">
-              <InfoRow
-                label="Permanent Address"
-                value={completeUserData?.personalAddress}
-              />
-              <InfoRow
-                label="Home District"
-                value={changeTypeToText(completeUserData?.homeDistrict || "")}
-              />
+              {isEditing ? (
+                <>
+                  <FormField
+                    title="Permanent Address"
+                    value={formData.personalAddress}
+                    handleChangeText={(text) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        personalAddress: text,
+                      }))
+                    }
+                    placeholder="Enter your address"
+                    otherStyles="mb-2"
+                  />
+                  <CustomDropDown
+                    placeholder="Home District"
+                    data={Object.values(District).map((district) => ({
+                      label: changeTypeToText(district),
+                      value: district,
+                    }))}
+                    value={formData.homeDistrict}
+                    handleValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, homeDistrict: value }))
+                    }
+                  />
+                </>
+              ) : (
+                <>
+                  <InfoRow
+                    label="Permanent Address"
+                    value={completeUserData?.personalAddress}
+                  />
+                  <InfoRow
+                    label="Home District"
+                    value={changeTypeToText(
+                      completeUserData?.homeDistrict || "",
+                    )}
+                  />
+                </>
+              )}
             </View>
           </View>
 
-          {/* Contact Information */}
+          {/* Contact Information Section */}
           <View className="mb-6">
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-lg font-pbold text-white">
-                Contact Information
-              </Text>
-            </View>
+            <Text className="text-lg font-pbold text-white mb-4">
+              Contact Information
+            </Text>
             <View className="bg-gray-50 rounded-xl p-4 space-y-4">
               <InfoRow label="Email" value={completeUserData?.email} />
-              {completeUserData?.phoneNumber && (
-                <InfoRow
-                  label="Phone Number"
-                  value={completeUserData?.phoneNumber}
-                />
+              {isEditing ? (
+                <>
+                  <FormField
+                    title="Phone Number"
+                    value={formData.phoneNumber}
+                    handleChangeText={(text) =>
+                      setFormData((prev) => ({ ...prev, phoneNumber: text }))
+                    }
+                    placeholder="Enter phone number"
+                    keyboardType="phone-pad"
+                    otherStyles="mb-2"
+                  />
+                  <FormField
+                    title="Mobile Number"
+                    value={formData.mobileNumber}
+                    handleChangeText={(text) =>
+                      setFormData((prev) => ({ ...prev, mobileNumber: text }))
+                    }
+                    placeholder="Enter mobile number"
+                    keyboardType="phone-pad"
+                    otherStyles="mb-2"
+                  />
+                </>
+              ) : (
+                <>
+                  <InfoRow
+                    label="Phone Number"
+                    value={completeUserData?.phoneNumber}
+                  />
+                  <InfoRow
+                    label="Mobile Number"
+                    value={completeUserData?.mobileNumber}
+                  />
+                </>
               )}
-              <InfoRow
-                label="Mobile Number"
-                value={completeUserData?.mobileNumber}
-              />
             </View>
           </View>
 
