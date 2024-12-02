@@ -10,5 +10,6 @@
 
 import logo from "../assets/images/aoek-logo.webp";
 import background from "../assets/images/black-bridge.webp";
+import avatar from "../assets/images/fall-back.webp";
 
-export default { logo, background };
+export default { logo, background, avatar };

@@ -28,6 +28,8 @@ export default function App() {
           </Text>
           <CustomButton
             title={"Continue to login"}
+            isLoading={isLoading}
+            loadingText="Verifying Session"
             handlePress={() => router.push("/sign-in")}
             containerStyles="w-full bg-red-500  mt-7"
             textStyles="text-white"

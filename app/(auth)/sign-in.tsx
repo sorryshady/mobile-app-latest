@@ -63,9 +63,9 @@ const SignIn = () => {
           key: "session",
           value: response.token,
         });
+        setUser(response.user);
+        router.replace("/home");
       }
-      setUser(response.user);
-      router.replace("/home");
     } catch (error) {
       setError(error instanceof Error ? error.message : "Something went wrong");
     } finally {

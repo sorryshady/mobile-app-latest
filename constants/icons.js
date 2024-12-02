@@ -18,6 +18,17 @@ import user from "../assets/icons/user.png";
 import alert from "../assets/icons/alert.png";
 import check from "../assets/icons/check.png";
 import calendar from "../assets/icons/calendar.png";
+import camera from "../assets/icons/camera.png";
+import email from "../assets/icons/email.png";
+import department from "../assets/icons/department.png";
+import status from "../assets/icons/status.png";
+import designation from "../assets/icons/designation.png";
+import office from "../assets/icons/office.png";
+import officead from "../assets/icons/officead.png";
+import blood from "../assets/icons/blood.png";
+import number from "../assets/icons/number.png";
+// import phone from "../assets/icons/phone.png";
+// import location from "../assets/icons/location.png";
 
 export default {
   play,
@@ -40,4 +51,15 @@ export default {
   alert,
   check,
   calendar,
+  camera,
+  email,
+  //   phone,
+  //   location,
+  status,
+  department,
+  designation,
+  office,
+  officead,
+  blood,
+  number,
 };
