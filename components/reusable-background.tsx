@@ -4,13 +4,15 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 
 const ReusableBackground = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SafeAreaView className="h-full">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        className="h-full"
-      >
-        <GradientBackground>{children}</GradientBackground>
-      </KeyboardAvoidingView>
+    <SafeAreaView className="h-full relative">
+      <GradientBackground>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          className="h-full"
+        >
+          {children}
+        </KeyboardAvoidingView>
+      </GradientBackground>
     </SafeAreaView>
   );
 };
