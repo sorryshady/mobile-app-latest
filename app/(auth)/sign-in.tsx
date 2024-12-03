@@ -18,6 +18,7 @@ import {
   Image,
   TouchableOpacity,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 
 interface UserDetails {

@@ -16,9 +16,9 @@ export default function GradientBackground({
       style={[
         {
           flex: 1,
-          marginBottom: Platform.OS === "ios" ? -34 : 0
+          marginBottom: Platform.OS === "ios" ? -34 : 0,
         },
-        style
+        style,
       ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}

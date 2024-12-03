@@ -128,6 +128,20 @@ const Profile = () => {
     }
   }, [refetchData]);
 
+  const openPasswordModal = useCallback(() => {
+    setModalVisible(false);
+    setTimeout(() => {
+      setPasswordModalVisible(true);
+    }, 500);
+  }, []);
+  const openRequestModal = useCallback(() => {
+    if (latestRequest?.status === "PENDING") return;
+    setModalVisible(false);
+    setTimeout(() => {
+      setRequestModalVisible(true);
+    }, 500);
+  }, [latestRequest]);
+
   if (isLoading) {
     return (
       <ReusableBackground>
@@ -269,10 +283,7 @@ const Profile = () => {
                   <View className="gap-4">
                     <CustomButton
                       title="Change Password"
-                      handlePress={() => {
-                        setModalVisible(false);
-                        setPasswordModalVisible(true);
-                      }}
+                      handlePress={openPasswordModal}
                       containerStyles="bg-[#5386A4] w-full"
                       textStyles="text-white font-pmedium"
                     />
@@ -283,11 +294,7 @@ const Profile = () => {
                             ? "Pending Request"
                             : "Submit Request"
                         }
-                        handlePress={() => {
-                          if (latestRequest?.status === "PENDING") return;
-                          setModalVisible(false);
-                          setRequestModalVisible(true);
-                        }}
+                        handlePress={openRequestModal}
                         containerStyles={`bg-[#5386A4] w-full ${latestRequest?.status === "PENDING" ? "opacity-50" : ""}`}
                         textStyles="text-white font-pmedium"
                       />
@@ -532,10 +539,12 @@ const Profile = () => {
           />
         </View>
       </ScrollView>
-      <ChangePasswordModal
-        visible={passwordModalVisible}
-        onClose={() => setPasswordModalVisible(false)}
-      />
+      {passwordModalVisible && (
+        <ChangePasswordModal
+          visible={passwordModalVisible}
+          onClose={() => setPasswordModalVisible(false)}
+        />
+      )}
       {completeUserData && completeUserData.userStatus === "WORKING" && (
         <SubmitRequestModal
           visible={requestModalVisible}

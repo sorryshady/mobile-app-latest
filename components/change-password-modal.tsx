@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Modal, Platform } from "react-native";
+import { View, Text, Modal } from "react-native";
 import FormField from "./form-field";
 import CustomButton from "./custom-button";
 import ErrorMessage from "./error-message";
