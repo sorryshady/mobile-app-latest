@@ -1,10 +1,4 @@
-import {
-  Image,
-  ImageSourcePropType,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Image, ImageSourcePropType, View } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
 import { icons } from "../../constants";
@@ -35,6 +29,8 @@ const TabsLayout = () => {
           tabBarInactiveTintColor: "white",
           tabBarStyle: {
             backgroundColor: "#1F333E",
+            borderTopWidth: 1,
+            borderTopColor: "#2E4450",
             paddingTop: 10,
             height: 84,
           },

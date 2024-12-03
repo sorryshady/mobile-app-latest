@@ -6,13 +6,14 @@ import { useGlobalContext } from "@/context/global-provider";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientBackground from "@/components/gradient-background";
+import ReusableBackground from "@/components/reusable-background";
 export default function App() {
   const { isLoading, isLoggedIn } = useGlobalContext();
   if (!isLoading && isLoggedIn) {
     return <Redirect href="/home" />;
   }
   return (
-    <SafeAreaView className="h-full">
+    <ReusableBackground>
       <ScrollView contentContainerStyle={{ height: "100%" }}>
         <GradientBackground>
           <View className="w-full min-h-[85vh] justify-center items-center  px-4">
@@ -40,10 +41,6 @@ export default function App() {
           </View>
         </GradientBackground>
       </ScrollView>
-      <StatusBar
-        backgroundColor="#1F333E"
-        style={Platform.OS === "ios" ? "dark" : "light"}
-      />
-    </SafeAreaView>
+    </ReusableBackground>
   );
 }

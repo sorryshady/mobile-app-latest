@@ -2,7 +2,9 @@ import { SplashScreen, Stack } from "expo-router";
 import "../global.css";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
-import GlobalProvider from '@/context/global-provider'
+import GlobalProvider from "@/context/global-provider";
+import { Platform } from 'react-native'
+import { StatusBar } from 'expo-status-bar'
 SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
@@ -35,6 +37,10 @@ const RootLayout = () => {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         {/* <Stack.Screen name="/search/[query]" options={{ headerShown: false }} /> */}
       </Stack>
+      <StatusBar
+        style={Platform.OS === "ios" ? "dark" : "light"}
+        backgroundColor="#1F333E"
+      />
     </GlobalProvider>
   );
 };
