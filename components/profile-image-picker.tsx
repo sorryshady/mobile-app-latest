@@ -10,7 +10,7 @@ import {
   Linking,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from "expo-image-manipulator";
+import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { images, icons } from "@/constants";
 import CustomButton from "./custom-button";
 
@@ -66,19 +66,15 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
   };
 
   const resizeImage = async (uri: string) => {
-    try {
-      const manipResult = await ImageManipulator.manipulateAsync(
-        uri,
-        [{ resize: { width: 800 } }], // Resize to a width of 800 pixels
-        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG },
-      );
-      console.log("Resized image size:", manipResult);
-      return manipResult.uri;
-    } catch (error) {
-      console.error("Error resizing image:", error);
-      Alert.alert("Error", "Failed to resize image");
-      return uri;
-    }
+    const context = await ImageManipulator.manipulate(uri)
+      .resize({ width: 800, height: 800 })
+      .renderAsync();
+    const image = await context.saveAsync({
+      base64: true,
+      compress: 0.8,
+      format: SaveFormat.WEBP,
+    });
+    return image.uri;
   };
 
   const pickImage = async () => {
@@ -113,7 +109,6 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
       });
 
       if (!result.canceled) {
-        console.log("Original image size:", result.assets[0]);
         const resizedUri = await resizeImage(result.assets[0].uri);
         setSelectedImage(resizedUri);
       }
