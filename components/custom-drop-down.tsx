@@ -34,7 +34,7 @@ const CustomDropDown = ({
   const renderLabel = () => {
     if (value || isFocus) {
       return (
-        <Text className="absolute bg-white text-black font-pmedium left-0 top-0 z-[999] text-[14px]">
+        <Text className="absolute bg-transparent text-black font-pmedium left-0 top-0 z-[999] text-[14px]">
           {placeholder}
         </Text>
       );
@@ -43,7 +43,7 @@ const CustomDropDown = ({
   };
 
   return (
-    <View className="relative w-full pt-8 bg-white">
+    <View className="relative w-full pt-8 bg-transparent">
       {renderLabel()}
       <Dropdown
         style={styles.dropdown}
@@ -74,23 +74,26 @@ export default CustomDropDown;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
-    borderRadius: 16,
+    borderRadius: 14,
     marginTop: 5,
   },
   itemContainerStyle: {
-    borderRadius: 16,
+    borderRadius: 14,
+    backgroundColor: "white",
   },
   dropdown: {
     height: 50,
     borderColor: "black",
     borderWidth: 2,
-    borderRadius: 16,
+    borderRadius: 14,
     paddingHorizontal: 8,
+    backgroundColor: "white",
   },
   placeholderStyle: {
     fontSize: 14,
     color: "black",
     marginLeft: 10,
+    backgroundColor: "white",
   },
   selectedTextStyle: {
     fontSize: 16,

@@ -6,6 +6,9 @@ import {
   Image,
   ActivityIndicator,
   TouchableOpacity,
+  Button,
+  Alert,
+  Modal,
 } from "react-native";
 import ReusableBackground from "@/components/reusable-background";
 import { useGlobalContext } from "@/context/global-provider";
@@ -20,6 +23,7 @@ import ImagePickerComponent from "@/components/image-picker";
 import FormField from "@/components/form-field";
 import CustomDropDown from "@/components/custom-drop-down";
 import ErrorMessage from "@/components/error-message";
+import ChangePasswordModal from '@/components/change-password-modal';
 
 const Profile = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
@@ -29,6 +33,8 @@ const Profile = () => {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
 
   const [formData, setFormData] = useState({
     personalAddress: "",
@@ -165,7 +171,57 @@ const Profile = () => {
               {new Date(completeUserData?.createdAt || "").getFullYear()}
             </Text>
           </View>
-
+          {/* Actions */}
+          <View className="mb-5">
+            <CustomButton
+              title="Actions"
+              handlePress={() => {
+                setModalVisible(true);
+              }}
+              containerStyles="bg-[#5386A4] w-full px-4"
+              textStyles="text-white font-pmedium"
+            />
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => setModalVisible(false)}
+            >
+              <View className="flex-1 justify-end bg-black/50">
+                <View className="bg-white rounded-t-3xl p-6">
+                  <Text className="text-xl font-pbold text-center mb-6">
+                    Actions
+                  </Text>
+                  <View className="gap-4">
+                    <CustomButton
+                      title="Change Password"
+                      handlePress={() => {
+                        setModalVisible(false);
+                        setPasswordModalVisible(true);
+                      }}
+                      containerStyles="bg-[#5386A4] w-full"
+                      textStyles="text-white font-pmedium"
+                    />
+                    <CustomButton
+                      title="Submit Request"
+                      handlePress={() => {
+                        setModalVisible(false);
+                        // Handle request submission
+                      }}
+                      containerStyles="bg-[#5386A4] w-full"
+                      textStyles="text-white font-pmedium"
+                    />
+                    <CustomButton
+                      title="Cancel"
+                      handlePress={() => setModalVisible(false)}
+                      containerStyles="bg-gray-200 w-full"
+                      textStyles="text-gray-700 font-pmedium"
+                    />
+                  </View>
+                </View>
+              </View>
+            </Modal>
+          </View>
           {/* Personal Info Section */}
           <View className="mb-6">
             <View className="flex-row justify-between items-center mb-4">
@@ -395,6 +451,10 @@ const Profile = () => {
           />
         </View>
       </ScrollView>
+      <ChangePasswordModal
+        visible={passwordModalVisible}
+        onClose={() => setPasswordModalVisible(false)}
+      />
     </ReusableBackground>
   );
 };

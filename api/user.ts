@@ -15,7 +15,7 @@ export const getCurrentUser = async () => {
     });
     const data = await response.json();
     if (data?.error) {
-      console.log(data.error);
+      return { error: data.error };
     } else {
       return data;
     }
@@ -36,9 +36,37 @@ export const getCompleteUser = async () => {
     });
     const data = await response.json();
     if (data?.error) {
-      console.log(data.error);
+      return { error: data.error };
     } else {
       return data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const changePassword = async (data: {
+  currentPassword: string;
+  newPassword: string;
+}) => {
+  try {
+    const token = await getToken({ key: "session" });
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/user/password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      },
+    );
+    const responseData = await response.json();
+    if (responseData?.error) {
+      return { error: responseData.error };
+    } else {
+      return responseData;
     }
   } catch (error) {
     console.log(error);

@@ -112,3 +112,11 @@ export type CompleteUser = {
   createdAt: Date;
   // ... add other fields as needed
 };
+
+export enum SecurityQuestionType {
+  MOTHERS_MAIDEN_NAME = "MOTHERS_MAIDEN_NAME",
+  FIRST_PET = "FIRST_PET",
+  FIRST_SCHOOL = "FIRST_SCHOOL",
+  FAVOURITE_BOOK = "FAVOURITE_BOOK",
+  FAVOURITE_CAR = "FAVOURITE_CAR",
+}

@@ -1,35 +1,11 @@
+import { SecurityQuestionType } from "@/constants/types";
+
 interface FormData {
-  membershipId: string;
+  userId: string;
   password: string;
-  confirmPassword: string;
+  securityQuestion: SecurityQuestionType;
+  securityAnswer: string;
 }
-export const setPassword = async (formData: FormData) => {
-  try {
-    const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/login/first-login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      },
-    );
-    const data = await response.json();
-    if (data.error) {
-      return {
-        error: data.error,
-      };
-    } else {
-      return {
-        user: data.userObject,
-        session: data.session,
-      };
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 interface Login {
   membershipId: string;
@@ -102,6 +78,30 @@ export const submitPassword = async (identifier: string, password: string) => {
           identifier,
           password,
         }),
+      },
+    );
+    const data = await response.json();
+    if (data.error) {
+      return {
+        error: data.error,
+      };
+    }
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const setUpPassword = async (formData: FormData) => {
+  try {
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/auth/set-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       },
     );
     const data = await response.json();

@@ -1,11 +1,14 @@
-import { submitIdentifier, submitPassword } from "@/api/login";
+import { setUpPassword, submitIdentifier, submitPassword } from "@/api/login";
 import CustomButton from "@/components/custom-button";
+import CustomDropDown from "@/components/custom-drop-down";
 import ErrorMessage from "@/components/error-message";
 import FormField from "@/components/form-field";
 import GradientBackground from "@/components/gradient-background";
 import { images } from "@/constants";
+import { SecurityQuestionType } from "@/constants/types";
 import { useGlobalContext } from "@/context/global-provider";
 import { setToken } from "@/lib/handle-session-tokens";
+import { changeTypeToText } from "@/lib/utils";
 import { router } from "expo-router";
 import { useState } from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
@@ -18,6 +21,12 @@ interface UserDetails {
   verificationStatus: "PENDING" | "VERIFIED" | "REJECTED";
   hasPassword: boolean;
 }
+interface SetupFormData {
+  securityQuestion: SecurityQuestionType;
+  securityAnswer: string;
+  password: string;
+  confirmPassword: string;
+}
 const SignIn = () => {
   const { setUser } = useGlobalContext();
   const [error, setError] = useState<string>("");
@@ -28,11 +37,20 @@ const SignIn = () => {
   );
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [password, setPassword] = useState<string>("");
+  const [setupFormData, setSetupFormData] = useState<SetupFormData>({
+    securityQuestion: SecurityQuestionType.MOTHERS_MAIDEN_NAME,
+    securityAnswer: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const handleNext = async () => {
     try {
       setIsLoading(true);
       setError("");
+      if (value === "") {
+        return;
+      }
       const response = await submitIdentifier(value);
       if (response?.error) {
         setError(response.error);
@@ -54,7 +72,48 @@ const SignIn = () => {
     try {
       setIsLoading(true);
       setError("");
+      if (password === "") {
+        return;
+      }
       const response = await submitPassword(value, password);
+      if (response?.error) {
+        setError(response.error);
+      }
+      if (response?.token) {
+        await setToken({
+          key: "session",
+          value: response.token,
+        });
+        setUser(response.user);
+        router.replace("/home");
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleSetup = async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+      if (
+        setupFormData.password === "" ||
+        setupFormData.confirmPassword === ""
+      ) {
+        return;
+      }
+      if (setupFormData.password !== setupFormData.confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+      const submitForm = {
+        userId: userDetails?.id ?? "",
+        securityQuestion: setupFormData.securityQuestion,
+        securityAnswer: setupFormData.securityAnswer,
+        password: setupFormData.password,
+      };
+      const response = await setUpPassword(submitForm);
       if (response?.error) {
         setError(response.error);
       }
@@ -75,15 +134,15 @@ const SignIn = () => {
   return (
     <SafeAreaView className="h-full">
       <GradientBackground>
-        <ScrollView contentContainerStyle={{ height: "100%" }}>
-          <View className="items-center  h-full p-6 gap-5">
+        <ScrollView>
+          <View className="items-center p-6 gap-5">
             <Image
               source={images.logo}
               className="w-[150px] h-[150px]"
               resizeMode="contain"
             />
 
-            <View className="bg-white rounded-2xl w-full gap-5 relative">
+            <View className="bg-white rounded-2xl w-full gap-5 relative mb-[5rem]">
               <Image
                 source={images.background}
                 className="w-full h-full absolute opacity-10"
@@ -94,7 +153,7 @@ const SignIn = () => {
                   Sign In
                 </Text>
                 {step === "identifier" ? (
-                  <>
+                  <View className="mb-6">
                     <FormField
                       title="Email or Membership ID"
                       placeholder="Enter your email or membership ID"
@@ -108,14 +167,18 @@ const SignIn = () => {
                       loadingText="Checking..."
                       handlePress={handleNext}
                       isLoading={isLoading}
-                      containerStyles="w-full bg-red-500 "
+                      containerStyles="w-full bg-red-500 mt-[2rem]"
                       textStyles="text-white"
                     />
-                  </>
+                  </View>
                 ) : (
-                  <View className="gap-5">
+                  <View className="gap-5 mb-6">
                     <TouchableOpacity
-                      onPress={() => setStep("identifier")}
+                      onPress={() => {
+                        setStep("identifier");
+                        setError("");
+                        setUserDetails(null);
+                      }}
                       className="self-start"
                     >
                       <Text className="text-black font-psemibold">← Back</Text>
@@ -162,7 +225,71 @@ const SignIn = () => {
                         />
                       </View>
                     ) : (
-                      <View></View>
+                      <ScrollView>
+                        <View className="gap-4">
+                          <CustomDropDown
+                            placeholder="Security Question"
+                            data={Object.values(SecurityQuestionType).map(
+                              (question) => ({
+                                label: changeTypeToText(question),
+                                value: question as SecurityQuestionType,
+                              }),
+                            )}
+                            value={setupFormData?.securityQuestion ?? ""}
+                            handleValueChange={(value: string) =>
+                              setSetupFormData((prev) => ({
+                                ...prev!,
+                                securityQuestion: value as SecurityQuestionType,
+                              }))
+                            }
+                          />
+                          <FormField
+                            title="Security Answer"
+                            placeholder="Enter your security answer"
+                            value={setupFormData?.securityAnswer}
+                            handleChangeText={(e: string) =>
+                              setSetupFormData((prev) => ({
+                                ...prev!,
+                                securityAnswer: e,
+                              }))
+                            }
+                          />
+                          <FormField
+                            title="Password"
+                            placeholder="Enter your password"
+                            showPasswordStrength={true}
+                            value={setupFormData?.password}
+                            handleChangeText={(e: string) =>
+                              setSetupFormData((prev) => ({
+                                ...prev!,
+                                password: e,
+                              }))
+                            }
+                            type="password"
+                          />
+                          <FormField
+                            title="Confirm Password"
+                            placeholder="Confirm your password"
+                            value={setupFormData?.confirmPassword}
+                            handleChangeText={(e: string) =>
+                              setSetupFormData((prev) => ({
+                                ...prev!,
+                                confirmPassword: e,
+                              }))
+                            }
+                            type="password"
+                          />
+                        </View>
+                        {error && <ErrorMessage error={error} />}
+                        <CustomButton
+                          title="Setup"
+                          loadingText="Setting up..."
+                          handlePress={handleSetup}
+                          isLoading={isLoading}
+                          containerStyles="w-full bg-red-500 mt-[2rem]"
+                          textStyles="text-white"
+                        />
+                      </ScrollView>
                     )}
                   </View>
                 )}
