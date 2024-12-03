@@ -6,22 +6,17 @@ import {
   Image,
   ActivityIndicator,
   TouchableOpacity,
-  Button,
-  Alert,
   Modal,
   RefreshControl,
+  Platform,
 } from "react-native";
 import ReusableBackground from "@/components/reusable-background";
 import { useGlobalContext } from "@/context/global-provider";
 import { getToken, removeToken } from "@/lib/handle-session-tokens";
 import { router } from "expo-router";
-import { CompleteUser, District } from "@/constants/types";
+import { District } from "@/constants/types";
 import { images, icons } from "@/constants";
-import {
-  getCompleteUser,
-  getLatestUserRequest,
-  hideUserRequest,
-} from "@/api/user";
+import { getCompleteUser, hideUserRequest } from "@/api/user";
 import { changeTypeToText } from "@/lib/utils";
 import CustomButton from "@/components/custom-button";
 import ImagePickerComponent from "@/components/image-picker";
@@ -146,13 +141,18 @@ const Profile = () => {
   return (
     <ReusableBackground>
       <ScrollView
-        className="flex-1 px-4 pt-6"
+        className="flex-1 px-4 pt-6 pb-0"
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: Platform.OS === "ios" ? 90 : 0,
+        }}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#5386A4" // for iOS
-            colors={["#5386A4"]} // for Android
+            tintColor="#5386A4"
+            colors={["#5386A4"]}
           />
         }
       >
@@ -278,7 +278,11 @@ const Profile = () => {
                     />
                     {completeUserData?.userStatus === "WORKING" && (
                       <CustomButton
-                        title={latestRequest?.status === "PENDING" ? "Pending Request" : "Submit Request"}
+                        title={
+                          latestRequest?.status === "PENDING"
+                            ? "Pending Request"
+                            : "Submit Request"
+                        }
                         handlePress={() => {
                           if (latestRequest?.status === "PENDING") return;
                           setModalVisible(false);

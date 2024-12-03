@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Modal } from "react-native";
+import { View, Text, Modal, Platform } from "react-native";
 import FormField from "./form-field";
 import CustomButton from "./custom-button";
 import ErrorMessage from "./error-message";
@@ -72,6 +72,8 @@ const ChangePasswordModal = ({ visible, onClose }: Props) => {
       transparent={true}
       visible={visible}
       onRequestClose={onClose}
+      presentationStyle="overFullScreen"
+      statusBarTranslucent={true}
     >
       <View className="flex-1 justify-end bg-black/50">
         <View className="bg-white rounded-t-3xl p-6">

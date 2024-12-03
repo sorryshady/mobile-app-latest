@@ -86,21 +86,33 @@ const FormField = ({
 
       {showPasswordStrength && (
         <View className="mt-2 gap-1">
-          <Text className="text-xs font-pmedium text-gray-500">Password must contain:</Text>
+          <Text className="text-xs font-pmedium text-gray-500">
+            Password must contain:
+          </Text>
           <View className="flex-row flex-wrap gap-2">
-            <Text className={`text-xs ${checks.length ? 'text-green-600' : 'text-red-500'}`}>
+            <Text
+              className={`text-xs ${checks.length ? "text-green-600" : "text-red-500"}`}
+            >
               • At least 8 characters
             </Text>
-            <Text className={`text-xs ${checks.uppercase ? 'text-green-600' : 'text-red-500'}`}>
+            <Text
+              className={`text-xs ${checks.uppercase ? "text-green-600" : "text-red-500"}`}
+            >
               • One uppercase letter
             </Text>
-            <Text className={`text-xs ${checks.lowercase ? 'text-green-600' : 'text-red-500'}`}>
+            <Text
+              className={`text-xs ${checks.lowercase ? "text-green-600" : "text-red-500"}`}
+            >
               • One lowercase letter
             </Text>
-            <Text className={`text-xs ${checks.number ? 'text-green-600' : 'text-red-500'}`}>
+            <Text
+              className={`text-xs ${checks.number ? "text-green-600" : "text-red-500"}`}
+            >
               • One number
             </Text>
-            <Text className={`text-xs ${checks.special ? 'text-green-600' : 'text-red-500'}`}>
+            <Text
+              className={`text-xs ${checks.special ? "text-green-600" : "text-red-500"}`}
+            >
               • One special character
             </Text>
           </View>
