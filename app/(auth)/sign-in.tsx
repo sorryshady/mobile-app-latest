@@ -3,7 +3,7 @@ import CustomButton from "@/components/custom-button";
 import CustomDropDown from "@/components/custom-drop-down";
 import ErrorMessage from "@/components/error-message";
 import FormField from "@/components/form-field";
-import ReusableBackground from "@/components/reusable-background";
+import GradientBackground from "@/components/gradient-background";
 import { images } from "@/constants";
 import { SecurityQuestionType } from "@/constants/types";
 import { useGlobalContext } from "@/context/global-provider";
@@ -19,7 +19,10 @@ import {
   TouchableOpacity,
   Platform,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface UserDetails {
   id: string;
@@ -143,173 +146,193 @@ const SignIn = () => {
       setIsLoading(false);
     }
   };
-  return (
-    <ReusableBackground>
-      <ScrollView>
-        <View className="items-center p-6 gap-5">
-          <Image
-            source={images.logo}
-            className="w-[150px] h-[150px]"
-            resizeMode="contain"
-          />
 
-          <View className="bg-white rounded-2xl w-full gap-5 relative mb-[5rem]">
-            <Image
-              source={images.background}
-              className="w-full h-full absolute opacity-10"
-              resizeMode="cover"
-            />
-            <View className="p-6 gap-5">
-              <Text className="text-black text-center font-psemibold text-2xl mt-5">
-                Sign In
-              </Text>
-              {step === "identifier" ? (
-                <View className="mb-6">
-                  <FormField
-                    title="Email or Membership ID"
-                    placeholder="Enter your email or membership ID"
-                    value={value}
-                    keyboardType="email-address"
-                    otherStyles="mt-7"
-                    handleChangeText={(e: string) => setValue(e)}
+  const renderIdentifierStep = () => (
+    <View className="mb-6">
+      <FormField
+        title="Email or Membership ID"
+        placeholder="Enter your email or membership ID"
+        value={value}
+        keyboardType="email-address"
+        otherStyles="mt-7"
+        handleChangeText={(e: string) => setValue(e)}
+      />
+      {error && <ErrorMessage error={error} />}
+      <CustomButton
+        title="Next"
+        loadingText="Checking..."
+        handlePress={handleNext}
+        isLoading={isLoading}
+        containerStyles="w-full bg-red-500 mt-[2rem]"
+        textStyles="text-white"
+      />
+    </View>
+  );
+
+  const renderPasswordStep = () => (
+    <View className="gap-4">
+      <FormField
+        title="Password"
+        placeholder="Enter your password"
+        value={password}
+        handleChangeText={(e: string) => setPassword(e)}
+        type="password"
+      />
+      {error && <ErrorMessage error={error} />}
+      <CustomButton
+        title="Login"
+        loadingText="Logging in..."
+        handlePress={handleLogin}
+        isLoading={isLoading}
+        containerStyles="w-full bg-red-500"
+        textStyles="text-white"
+      />
+    </View>
+  );
+
+  const renderSetupStep = () => (
+    <ScrollView>
+      <View className="gap-4">
+        <CustomDropDown
+          placeholder="Security Question"
+          data={Object.values(SecurityQuestionType).map((question) => ({
+            label: changeTypeToText(question),
+            value: question as SecurityQuestionType,
+          }))}
+          value={setupFormData?.securityQuestion ?? ""}
+          handleValueChange={(value: string) =>
+            setSetupFormData((prev) => ({
+              ...prev!,
+              securityQuestion: value as SecurityQuestionType,
+            }))
+          }
+        />
+        <FormField
+          title="Security Answer"
+          placeholder="Enter your security answer"
+          value={setupFormData?.securityAnswer}
+          handleChangeText={(e: string) =>
+            setSetupFormData((prev) => ({
+              ...prev!,
+              securityAnswer: e,
+            }))
+          }
+        />
+        <FormField
+          title="Password"
+          placeholder="Enter your password"
+          showPasswordStrength={true}
+          value={setupFormData?.password}
+          handleChangeText={(e: string) =>
+            setSetupFormData((prev) => ({
+              ...prev!,
+              password: e,
+            }))
+          }
+          type="password"
+        />
+        <FormField
+          title="Confirm Password"
+          placeholder="Confirm your password"
+          value={setupFormData?.confirmPassword}
+          handleChangeText={(e: string) =>
+            setSetupFormData((prev) => ({
+              ...prev!,
+              confirmPassword: e,
+            }))
+          }
+          type="password"
+        />
+      </View>
+      {error && <ErrorMessage error={error} />}
+      <CustomButton
+        title="Setup"
+        loadingText="Setting up..."
+        handlePress={handleSetup}
+        isLoading={isLoading}
+        containerStyles="w-full bg-red-500 mt-[2rem]"
+        textStyles="text-white"
+      />
+    </ScrollView>
+  );
+
+  return (
+    <SafeAreaView className="h-full relative">
+      <GradientBackground>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
+            className="flex-1"
+          >
+            <ScrollView>
+              <View className="items-center p-6 gap-5">
+                <Image
+                  source={images.logo}
+                  className="w-[150px] h-[150px]"
+                  resizeMode="contain"
+                />
+                <View className="bg-white rounded-2xl w-full gap-5 relative mb-[5rem]">
+                  <Image
+                    source={images.background}
+                    className="w-full h-full absolute opacity-10"
+                    resizeMode="cover"
                   />
-                  {error && <ErrorMessage error={error} />}
-                  <CustomButton
-                    title="Next"
-                    loadingText="Checking..."
-                    handlePress={handleNext}
-                    isLoading={isLoading}
-                    containerStyles="w-full bg-red-500 mt-[2rem]"
-                    textStyles="text-white"
-                  />
-                </View>
-              ) : (
-                <View className="gap-5 mb-6">
-                  <TouchableOpacity
-                    onPress={() => {
-                      setStep("identifier");
-                      setError("");
-                      setUserDetails(null);
-                    }}
-                    className="self-start"
-                  >
-                    <Text className="text-black font-psemibold">← Back</Text>
-                  </TouchableOpacity>
-                  {userDetails && (
-                    <View className="text-center gap-4">
-                      <View className="relative h-28 w-28 mx-auto rounded-full overflow-hidden bg-muted border border-black flex items-center justify-center">
-                        {userDetails.photoUrl ? (
-                          <Image
-                            src={userDetails.photoUrl}
-                            alt={userDetails.name}
-                            className="w-full h-full"
-                            style={{ transform: [{ scale: 0.9 }] }}
-                            resizeMode="cover"
-                          />
-                        ) : (
-                          <Text className="text-black text-2xl font-semibold">
-                            {userDetails.name[0].toUpperCase()}
+                  <View className="p-6 gap-5">
+                    <Text className="text-black text-center font-psemibold text-2xl mt-5">
+                      Sign In
+                    </Text>
+                    {step === "identifier" ? (
+                      renderIdentifierStep()
+                    ) : (
+                      <View className="gap-5 mb-6">
+                        <TouchableOpacity
+                          onPress={() => {
+                            setStep("identifier");
+                            setError("");
+                            setUserDetails(null);
+                          }}
+                          className="self-start"
+                        >
+                          <Text className="text-black font-psemibold">
+                            ← Back
                           </Text>
+                        </TouchableOpacity>
+                        {userDetails && (
+                          <View className="text-center gap-4">
+                            <View className="relative h-28 w-28 mx-auto rounded-full overflow-hidden bg-muted border border-black flex items-center justify-center">
+                              {userDetails.photoUrl ? (
+                                <Image
+                                  src={userDetails.photoUrl}
+                                  alt={userDetails.name}
+                                  className="w-full h-full"
+                                  style={{ transform: [{ scale: 0.9 }] }}
+                                  resizeMode="cover"
+                                />
+                              ) : (
+                                <Text className="text-black text-2xl font-semibold">
+                                  {userDetails.name[0].toUpperCase()}
+                                </Text>
+                              )}
+                            </View>
+                            <Text className="font-psemibold text-lg text-center">
+                              {userDetails.name}
+                            </Text>
+                          </View>
                         )}
+                        {step === "password"
+                          ? renderPasswordStep()
+                          : renderSetupStep()}
                       </View>
-                      <Text className="font-psemibold text-lg text-center">
-                        {userDetails.name}
-                      </Text>
-                    </View>
-                  )}
-                  {step === "password" ? (
-                    <View className="gap-4">
-                      <FormField
-                        title="Password"
-                        placeholder="Enter your password"
-                        value={password}
-                        handleChangeText={(e: string) => setPassword(e)}
-                        type="password"
-                      />
-                      {error && <ErrorMessage error={error} />}
-                      <CustomButton
-                        title="Login"
-                        loadingText="Logging in..."
-                        handlePress={handleLogin}
-                        isLoading={isLoading}
-                        containerStyles="w-full bg-red-500 "
-                        textStyles="text-white"
-                      />
-                    </View>
-                  ) : (
-                    <ScrollView>
-                      <View className="gap-4">
-                        <CustomDropDown
-                          placeholder="Security Question"
-                          data={Object.values(SecurityQuestionType).map(
-                            (question) => ({
-                              label: changeTypeToText(question),
-                              value: question as SecurityQuestionType,
-                            }),
-                          )}
-                          value={setupFormData?.securityQuestion ?? ""}
-                          handleValueChange={(value: string) =>
-                            setSetupFormData((prev) => ({
-                              ...prev!,
-                              securityQuestion: value as SecurityQuestionType,
-                            }))
-                          }
-                        />
-                        <FormField
-                          title="Security Answer"
-                          placeholder="Enter your security answer"
-                          value={setupFormData?.securityAnswer}
-                          handleChangeText={(e: string) =>
-                            setSetupFormData((prev) => ({
-                              ...prev!,
-                              securityAnswer: e,
-                            }))
-                          }
-                        />
-                        <FormField
-                          title="Password"
-                          placeholder="Enter your password"
-                          showPasswordStrength={true}
-                          value={setupFormData?.password}
-                          handleChangeText={(e: string) =>
-                            setSetupFormData((prev) => ({
-                              ...prev!,
-                              password: e,
-                            }))
-                          }
-                          type="password"
-                        />
-                        <FormField
-                          title="Confirm Password"
-                          placeholder="Confirm your password"
-                          value={setupFormData?.confirmPassword}
-                          handleChangeText={(e: string) =>
-                            setSetupFormData((prev) => ({
-                              ...prev!,
-                              confirmPassword: e,
-                            }))
-                          }
-                          type="password"
-                        />
-                      </View>
-                      {error && <ErrorMessage error={error} />}
-                      <CustomButton
-                        title="Setup"
-                        loadingText="Setting up..."
-                        handlePress={handleSetup}
-                        isLoading={isLoading}
-                        containerStyles="w-full bg-red-500 mt-[2rem]"
-                        textStyles="text-white"
-                      />
-                    </ScrollView>
-                  )}
+                    )}
+                  </View>
                 </View>
-              )}
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </ReusableBackground>
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </TouchableWithoutFeedback>
+      </GradientBackground>
+    </SafeAreaView>
   );
 };
 export default SignIn;

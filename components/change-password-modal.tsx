@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, Modal } from "react-native";
+import {
+  View,
+  Text,
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import FormField from "./form-field";
 import CustomButton from "./custom-button";
 import ErrorMessage from "./error-message";
@@ -75,7 +81,10 @@ const ChangePasswordModal = ({ visible, onClose }: Props) => {
       presentationStyle="overFullScreen"
       statusBarTranslucent={true}
     >
-      <View className="flex-1 justify-end bg-black/50">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 justify-end bg-black/50"
+      >
         <View className="bg-white rounded-t-3xl p-6">
           <Text className="text-xl font-pbold text-center mb-6">
             Change Password
@@ -133,7 +142,7 @@ const ChangePasswordModal = ({ visible, onClose }: Props) => {
             </View>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };

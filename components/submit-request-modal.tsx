@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Modal } from "react-native";
+import {
+  View,
+  Text,
+  Modal,
+  Platform,
+  KeyboardAvoidingView,
+} from "react-native";
 import FormField from "./form-field";
 import CustomButton from "./custom-button";
 import CustomDropDown from "./custom-drop-down";
@@ -51,12 +57,14 @@ const SubmitRequestModal = ({ visible, onClose }: Props) => {
   useEffect(() => {
     if (completeUserData) {
       setTransferData({
-        newWorkDistrict: completeUserData.workDistrict || District.THIRUVANANTHAPURAM,
+        newWorkDistrict:
+          completeUserData.workDistrict || District.THIRUVANANTHAPURAM,
         newOfficeAddress: completeUserData.officeAddress || "",
       });
 
       setPromotionData({
-        newPosition: completeUserData.designation || Designation.ASSISTANT_ENGINEER,
+        newPosition:
+          completeUserData.designation || Designation.ASSISTANT_ENGINEER,
       });
 
       setRetirementData({
@@ -208,7 +216,10 @@ const SubmitRequestModal = ({ visible, onClose }: Props) => {
       visible={visible}
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-end bg-black/50">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1 justify-end bg-black/50"
+      >
         <View className="bg-white rounded-t-3xl p-6">
           <Text className="text-xl font-pbold text-center mb-6">
             Submit Request
@@ -251,7 +262,7 @@ const SubmitRequestModal = ({ visible, onClose }: Props) => {
             </View>
           </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
