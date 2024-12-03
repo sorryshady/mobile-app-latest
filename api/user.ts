@@ -144,3 +144,34 @@ export const hideUserRequest = async (requestId: string) => {
     console.log(error);
   }
 };
+
+export const updateProfilePhoto = async (imageUri: string, name: string) => {
+  try {
+    // Create form data
+    const formData = new FormData();
+    formData.append("photo", {
+      uri: imageUri,
+      type: "image/webp",
+      name: `${name}.webp`,
+    } as any);
+
+    const token = await getToken({ key: "session" });
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/mobile`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update profile photo");
+    }
+
+    const data = await response.json();
+    return data; // This should return the new photo URL and ID
+  } catch (error) {
+    console.error("Error updating profile photo:", error);
+    throw error;
+  }
+};

@@ -13,6 +13,7 @@ import * as ImagePicker from "expo-image-picker";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { images, icons } from "@/constants";
 import CustomButton from "./custom-button";
+import { updateProfilePhoto } from "@/api/user";
 
 interface ProfileImagePickerProps {
   currentPhotoUrl: string | null;
@@ -29,6 +30,7 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
 }) => {
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const closeModal = () => {
     setImageModalVisible(false);
@@ -71,7 +73,7 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
       .renderAsync();
     const image = await context.saveAsync({
       base64: true,
-      compress: 0.8,
+      compress: 1,
       format: SaveFormat.WEBP,
     });
     return image.uri;
@@ -118,11 +120,23 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
     }
   };
 
-  const confirmImage = () => {
+  const confirmImage = async () => {
     if (selectedImage) {
-      onImageSelected(selectedImage);
+      try {
+        setIsLoading(true);
+        const result = await updateProfilePhoto(selectedImage, name || "user");
+        if (result.error) {
+          Alert.alert("Error", result.error);
+        }
+        onImageSelected(result?.photoUrl);
+        setImageModalVisible(false);
+        setSelectedImage(null);
+      } catch (error) {
+        Alert.alert("Error", "Failed to update profile picture");
+      } finally {
+        setIsLoading(false);
+      }
     }
-    setImageModalVisible(false);
   };
 
   return (
@@ -180,6 +194,8 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
                 <CustomButton
                   title="Confirm"
                   handlePress={confirmImage}
+                  loadingText="Updating..."
+                  isLoading={isLoading}
                   containerStyles="bg-green-500 w-full"
                   textStyles="text-white font-pmedium"
                 />

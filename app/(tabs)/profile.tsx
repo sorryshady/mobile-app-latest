@@ -9,6 +9,7 @@ import {
   Modal,
   RefreshControl,
   Platform,
+  Alert,
 } from "react-native";
 import ReusableBackground from "@/components/reusable-background";
 import { useGlobalContext } from "@/context/global-provider";
@@ -16,7 +17,11 @@ import { getToken, removeToken } from "@/lib/handle-session-tokens";
 import { router } from "expo-router";
 import { District } from "@/constants/types";
 import { images, icons } from "@/constants";
-import { getCompleteUser, hideUserRequest } from "@/api/user";
+import {
+  getCompleteUser,
+  hideUserRequest,
+  updateProfilePhoto,
+} from "@/api/user";
 import { changeTypeToText } from "@/lib/utils";
 import CustomButton from "@/components/custom-button";
 import ImagePickerComponent from "@/components/image-picker";
@@ -136,6 +141,7 @@ const Profile = () => {
       setPasswordModalVisible(true);
     }, 500);
   }, []);
+
   const openRequestModal = useCallback(() => {
     if (latestRequest?.status === "PENDING") return;
     setModalVisible(false);
@@ -144,9 +150,10 @@ const Profile = () => {
     }, 500);
   }, [latestRequest]);
 
-  const handleImageSelected = async (imageUri: string) => {
-    console.log("Selected image URI:", imageUri);
-    // TODO: Implement image upload logic
+  const handleImageSelected = async (uri: string) => {
+    if (uri) {
+      onRefresh();
+    }
   };
 
   if (isLoading) {
