@@ -10,6 +10,7 @@ import {
   Linking,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 import { images, icons } from "@/constants";
 import CustomButton from "./custom-button";
 
@@ -35,22 +36,23 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
   };
 
   const requestCameraPermission = async () => {
-    if (Platform.OS !== 'ios') return true;
+    if (Platform.OS !== "ios") return true;
 
-    const { status: existingStatus } = await ImagePicker.getCameraPermissionsAsync();
+    const { status: existingStatus } =
+      await ImagePicker.getCameraPermissionsAsync();
 
-    if (existingStatus === 'granted') return true;
+    if (existingStatus === "granted") return true;
 
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
-    if (status !== 'granted') {
+    if (status !== "granted") {
       Alert.alert(
         "Permission Required",
         "Please grant camera access to take photos.",
         [
           {
             text: "Cancel",
-            style: "cancel"
+            style: "cancel",
           },
           {
             text: "Settings",
@@ -63,6 +65,22 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
     return true;
   };
 
+  const resizeImage = async (uri: string) => {
+    try {
+      const manipResult = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 800 } }], // Resize to a width of 800 pixels
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG },
+      );
+      console.log("Resized image size:", manipResult);
+      return manipResult.uri;
+    } catch (error) {
+      console.error("Error resizing image:", error);
+      Alert.alert("Error", "Failed to resize image");
+      return uri;
+    }
+  };
+
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -73,7 +91,8 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
       });
 
       if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri);
+        const resizedUri = await resizeImage(result.assets[0].uri);
+        setSelectedImage(resizedUri);
       }
     } catch (error) {
       console.error("Error picking image:", error);
@@ -94,7 +113,9 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
       });
 
       if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri);
+        console.log("Original image size:", result.assets[0]);
+        const resizedUri = await resizeImage(result.assets[0].uri);
+        setSelectedImage(resizedUri);
       }
     } catch (error) {
       console.error("Error taking photo:", error);
@@ -117,8 +138,8 @@ const ProfileImagePicker: React.FC<ProfileImagePickerProps> = ({
             selectedImage
               ? { uri: selectedImage }
               : currentPhotoUrl
-              ? { uri: currentPhotoUrl }
-              : images.avatar
+                ? { uri: currentPhotoUrl }
+                : images.avatar
           }
           className="w-32 h-32 rounded-full"
           resizeMode="cover"
