@@ -25,6 +25,7 @@ const ChangePasswordModal = ({ visible, onClose }: Props) => {
     try {
       setError(null);
       setIsLoading(true);
+      setSuccessMessage(null);
 
       // Validate passwords match
       if (formData.newPassword !== formData.confirmPassword) {

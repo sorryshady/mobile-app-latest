@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   ScrollView,
   Text,
@@ -9,6 +9,7 @@ import {
   Button,
   Alert,
   Modal,
+  RefreshControl,
 } from "react-native";
 import ReusableBackground from "@/components/reusable-background";
 import { useGlobalContext } from "@/context/global-provider";
@@ -16,25 +17,37 @@ import { getToken, removeToken } from "@/lib/handle-session-tokens";
 import { router } from "expo-router";
 import { CompleteUser, District } from "@/constants/types";
 import { images, icons } from "@/constants";
-import { getCompleteUser } from "@/api/user";
+import {
+  getCompleteUser,
+  getLatestUserRequest,
+  hideUserRequest,
+} from "@/api/user";
 import { changeTypeToText } from "@/lib/utils";
 import CustomButton from "@/components/custom-button";
 import ImagePickerComponent from "@/components/image-picker";
 import FormField from "@/components/form-field";
 import CustomDropDown from "@/components/custom-drop-down";
 import ErrorMessage from "@/components/error-message";
-import ChangePasswordModal from '@/components/change-password-modal';
+import ChangePasswordModal from "@/components/change-password-modal";
+import SubmitRequestModal from "@/components/submit-request-modal";
 
 const Profile = () => {
-  const { user, setUser, setIsLoggedIn } = useGlobalContext();
+  const {
+    setUser,
+    isLoading,
+    setIsLoggedIn,
+    setCompleteUserData,
+    completeUserData,
+    latestRequest,
+    setLatestRequest,
+    refetchData,
+  } = useGlobalContext();
   const [error, setError] = useState<string | null>(null);
-  const [completeUserData, setCompleteUserData] = useState<CompleteUser | null>(
-    null,
-  );
-  const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+  const [requestModalVisible, setRequestModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [formData, setFormData] = useState({
     personalAddress: "",
@@ -42,23 +55,6 @@ const Profile = () => {
     mobileNumber: "",
     homeDistrict: "",
   });
-
-  useEffect(() => {
-    const fetchCompleteUserData = async () => {
-      try {
-        const response = await getCompleteUser();
-        setCompleteUserData(response);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (user?.membershipId) {
-      fetchCompleteUserData();
-    }
-  }, [user?.membershipId]);
 
   useEffect(() => {
     if (completeUserData) {
@@ -102,7 +98,7 @@ const Profile = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            membershipId: user?.membershipId,
+            membershipId: completeUserData?.membershipId,
             personalAddress: formData.personalAddress,
             homeDistrict: formData.homeDistrict,
             phoneNumber: formData.phoneNumber,
@@ -128,6 +124,15 @@ const Profile = () => {
     }
   };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetchData();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchData]);
+
   if (isLoading) {
     return (
       <ReusableBackground>
@@ -140,17 +145,86 @@ const Profile = () => {
 
   return (
     <ReusableBackground>
-      <ScrollView className="flex-1 px-4 pt-6">
+      <ScrollView
+        className="flex-1 px-4 pt-6"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#5386A4" // for iOS
+            colors={["#5386A4"]} // for Android
+          />
+        }
+      >
         <View className="flex-1 my-[3rem]">
-          <Text className="text-2xl font-pbold mb-6 text-white text-center">
+          <Text className="text-2xl font-pbold mb-3 text-white text-center">
             Your Profile
           </Text>
 
           {/* Profile Header */}
           <View className="items-center mb-6">
+            {latestRequest && latestRequest.showAgain && (
+              <View
+                className={`w-full h-14 px-4 rounded-2xl items-center flex-row my-4 gap-2 justify-between ${
+                  latestRequest.status === "VERIFIED"
+                    ? "bg-green-400"
+                    : latestRequest.status === "REJECTED"
+                      ? "bg-red-400"
+                      : "bg-yellow-400"
+                }`}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Image
+                    source={
+                      latestRequest.status === "VERIFIED"
+                        ? icons.check
+                        : latestRequest.status === "REJECTED"
+                          ? icons.alert
+                          : icons.clock
+                    }
+                    className="w-6 h-6"
+                    tintColor="white"
+                  />
+                  <View>
+                    <Text className="text-white font-psemibold">
+                      {latestRequest.status} Request
+                    </Text>
+                    {latestRequest.adminComments && (
+                      <Text className="text-white text-xs">
+                        {latestRequest.adminComments}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <TouchableOpacity
+                  onPress={async () => {
+                    try {
+                      if (latestRequest.status !== "PENDING") {
+                        await hideUserRequest(latestRequest.id);
+                      }
+                      setLatestRequest((prev) =>
+                        prev ? { ...prev, showAgain: false } : null,
+                      );
+                    } catch (error) {
+                      console.error("Error hiding request:", error);
+                    }
+                  }}
+                >
+                  <Image
+                    source={icons.eyeHide}
+                    className="w-5 h-5"
+                    tintColor="white"
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
             <View className="relative">
               <Image
-                source={{ uri: completeUserData?.photoUrl || images.avatar }}
+                source={
+                  completeUserData?.photoUrl
+                    ? { uri: completeUserData.photoUrl }
+                    : images.avatar
+                }
                 className="w-32 h-32 rounded-full"
                 resizeMode="cover"
               />
@@ -202,15 +276,18 @@ const Profile = () => {
                       containerStyles="bg-[#5386A4] w-full"
                       textStyles="text-white font-pmedium"
                     />
-                    <CustomButton
-                      title="Submit Request"
-                      handlePress={() => {
-                        setModalVisible(false);
-                        // Handle request submission
-                      }}
-                      containerStyles="bg-[#5386A4] w-full"
-                      textStyles="text-white font-pmedium"
-                    />
+                    {completeUserData?.userStatus === "WORKING" && (
+                      <CustomButton
+                        title={latestRequest?.status === "PENDING" ? "Pending Request" : "Submit Request"}
+                        handlePress={() => {
+                          if (latestRequest?.status === "PENDING") return;
+                          setModalVisible(false);
+                          setRequestModalVisible(true);
+                        }}
+                        containerStyles={`bg-[#5386A4] w-full ${latestRequest?.status === "PENDING" ? "opacity-50" : ""}`}
+                        textStyles="text-white font-pmedium"
+                      />
+                    )}
                     <CustomButton
                       title="Cancel"
                       handlePress={() => setModalVisible(false)}
@@ -455,6 +532,12 @@ const Profile = () => {
         visible={passwordModalVisible}
         onClose={() => setPasswordModalVisible(false)}
       />
+      {completeUserData && completeUserData.userStatus === "WORKING" && (
+        <SubmitRequestModal
+          visible={requestModalVisible}
+          onClose={() => setRequestModalVisible(false)}
+        />
+      )}
     </ReusableBackground>
   );
 };

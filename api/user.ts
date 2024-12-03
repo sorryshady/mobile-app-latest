@@ -1,3 +1,4 @@
+import { Request } from "@/constants/types";
 import { getToken } from "@/lib/handle-session-tokens";
 
 export const getCurrentUser = async () => {
@@ -67,6 +68,77 @@ export const changePassword = async (data: {
       return { error: responseData.error };
     } else {
       return responseData;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const submitRequest = async (data: Request) => {
+  try {
+    const token = await getToken({ key: "session" });
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/user/request`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      },
+    );
+    const responseData = await response.json();
+    if (responseData?.error) {
+      return { error: responseData.error };
+    } else {
+      return responseData;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getLatestUserRequest = async (membershipId: number) => {
+  try {
+    const token = await getToken({ key: "session" });
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/user/request?membershipId=${membershipId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch latest request");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error in getLatestUserRequest:", error);
+    throw error;
+  }
+};
+
+export const hideUserRequest = async (requestId: string) => {
+  try {
+    const token = await getToken({ key: "session" });
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/user/request?requestId=${requestId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    const responseData = await response.json();
+    if (responseData?.error) {
+      console.log(responseData.error);
     }
   } catch (error) {
     console.log(error);

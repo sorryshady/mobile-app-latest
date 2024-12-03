@@ -27,6 +27,7 @@ import office from "../assets/icons/office.png";
 import officead from "../assets/icons/officead.png";
 import blood from "../assets/icons/blood.png";
 import number from "../assets/icons/number.png";
+import clock from "../assets/icons/clock.png";
 // import phone from "../assets/icons/phone.png";
 // import location from "../assets/icons/location.png";
 
@@ -62,4 +63,5 @@ export default {
   officead,
   blood,
   number,
+  clock,
 };

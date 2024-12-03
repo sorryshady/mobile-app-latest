@@ -8,6 +8,11 @@ export enum UserRole {
   ADMIN = "ADMIN",
   REGULAR = "REGULAR",
 }
+export enum Verification {
+  PENDING = "PENDING",
+  VERIFIED = "VERIFIED",
+  REJECTED = "REJECTED",
+}
 export enum Gender {
   MALE = "MALE",
   FEMALE = "FEMALE",
@@ -120,3 +125,34 @@ export enum SecurityQuestionType {
   FAVOURITE_BOOK = "FAVOURITE_BOOK",
   FAVOURITE_CAR = "FAVOURITE_CAR",
 }
+export type RequestType = "PROMOTION" | "TRANSFER" | "RETIREMENT";
+export type TransferRequest = {
+  newWorkDistrict: District;
+  newOfficeAddress: string;
+};
+export type PromotionRequest = {
+  newPosition: Designation;
+};
+export type RetirementRequest = {
+  retirementDate: string;
+};
+
+export type Request = {
+  requestType: RequestType;
+  requestData: TransferRequest | PromotionRequest | RetirementRequest;
+};
+
+export type RequestResponse = {
+  id: string;
+  status: Verification;
+  membershipId: number;
+  requestType: RequestType;
+  oldPosition: Designation;
+  newPosition: Designation;
+  oldWorkDistrict: District;
+  newWorkDistrict: District;
+  retirementDate: Date;
+  user: CompleteUser;
+  adminComments: string;
+  showAgain: boolean;
+};
