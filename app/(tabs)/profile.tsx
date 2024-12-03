@@ -26,6 +26,7 @@ import ErrorMessage from "@/components/error-message";
 import ChangePasswordModal from "@/components/change-password-modal";
 import SubmitRequestModal from "@/components/submit-request-modal";
 import ShowRequestStatus from "@/components/show-request-status";
+import ProfileImagePicker from "@/components/profile-image-picker";
 
 const Profile = () => {
   const {
@@ -143,6 +144,11 @@ const Profile = () => {
     }, 500);
   }, [latestRequest]);
 
+  const handleImageSelected = async (imageUri: string) => {
+    console.log("Selected image URI:", imageUri);
+    // TODO: Implement image upload logic
+  };
+
   if (isLoading) {
     return (
       <ReusableBackground>
@@ -177,42 +183,26 @@ const Profile = () => {
           </Text>
 
           {/* Profile Header */}
-          <View className="items-center mb-6">
-            <View className="relative">
-              <Image
-                source={
-                  completeUserData?.photoUrl
-                    ? { uri: completeUserData.photoUrl }
-                    : images.avatar
-                }
-                className="w-32 h-32 rounded-full"
-                resizeMode="cover"
-              />
-              <TouchableOpacity
-                className="absolute bottom-0 right-0 bg-white p-2 rounded-full"
-                onPress={() => {
-                  /* Handle photo update */
-                }}
-              >
-                <Image source={icons.camera} className="w-5 h-5" />
-              </TouchableOpacity>
-            </View>
-            <Text className="text-xl text-white font-pbold mt-3">
-              {completeUserData?.name}
-            </Text>
-            <Text className="text-white mt-1">
-              Member since{" "}
-              {new Date(completeUserData?.createdAt || "").getFullYear()}
-            </Text>
-            {/* Latest Request */}
-            {latestRequest && latestRequest.showAgain && (
-              <ShowRequestStatus
-                latestRequest={latestRequest}
-                hideUserRequest={hideUserRequest}
-                setLatestRequest={setLatestRequest}
-              />
-            )}
-          </View>
+          <ProfileImagePicker
+            currentPhotoUrl={completeUserData?.photoUrl || null}
+            onImageSelected={handleImageSelected}
+            name={completeUserData?.name || ""}
+            createdAt={
+              completeUserData?.createdAt
+                ? new Date(completeUserData.createdAt).toISOString()
+                : ""
+            }
+          />
+
+          {/* Latest Request */}
+          {latestRequest && latestRequest.showAgain && (
+            <ShowRequestStatus
+              latestRequest={latestRequest}
+              hideUserRequest={hideUserRequest}
+              setLatestRequest={setLatestRequest}
+            />
+          )}
+
           {/* Actions */}
           <View className="mb-5">
             <CustomButton

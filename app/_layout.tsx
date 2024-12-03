@@ -3,8 +3,8 @@ import "../global.css";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import GlobalProvider from "@/context/global-provider";
-import { Platform } from 'react-native'
-import { StatusBar } from 'expo-status-bar'
+import { Platform } from "react-native";
+import { StatusBar } from "expo-status-bar";
 SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({

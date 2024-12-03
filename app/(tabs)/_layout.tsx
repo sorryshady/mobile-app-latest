@@ -1,7 +1,8 @@
-import { Image, ImageSourcePropType, View } from "react-native";
+import { Image, ImageSourcePropType, Platform, View } from "react-native";
 import React from "react";
 import { Tabs } from "expo-router";
 import { icons } from "../../constants";
+import { StatusBar } from "expo-status-bar";
 
 interface TabIconProps {
   icon: ImageSourcePropType;
@@ -29,8 +30,6 @@ const TabsLayout = () => {
           tabBarInactiveTintColor: "white",
           tabBarStyle: {
             backgroundColor: "#1F333E",
-            borderTopWidth: 1,
-            borderTopColor: "#2E4450",
             paddingTop: 10,
             height: 84,
           },
@@ -87,6 +86,10 @@ const TabsLayout = () => {
           }}
         />
       </Tabs>
+      <StatusBar
+        style={Platform.OS === "ios" ? "dark" : "light"}
+        backgroundColor="#1F333E"
+      />
     </>
   );
 };

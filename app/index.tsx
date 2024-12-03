@@ -1,10 +1,8 @@
 import CustomButton from "@/components/custom-button";
 import { Redirect, router } from "expo-router";
-import { Image, Platform, ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import { images } from "../constants";
 import { useGlobalContext } from "@/context/global-provider";
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaView } from "react-native-safe-area-context";
 import GradientBackground from "@/components/gradient-background";
 import ReusableBackground from "@/components/reusable-background";
 export default function App() {
