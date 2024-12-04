@@ -2,7 +2,8 @@ export type User = {
   email: string;
   membershipId: number;
   name: string;
-  razorpayId?: string;
+  photoUrl?: string;
+  id: string;
 };
 export enum UserRole {
   ADMIN = "ADMIN",

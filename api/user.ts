@@ -1,5 +1,7 @@
 import { Request } from "@/constants/types";
+import { CustomFormData } from '@/lib/custom-form-data'
 import { getToken } from "@/lib/handle-session-tokens";
+import axios from "axios";
 
 export const getCurrentUser = async () => {
   try {
@@ -148,7 +150,7 @@ export const hideUserRequest = async (requestId: string) => {
 export const updateProfilePhoto = async (imageUri: string, name: string) => {
   try {
     // Create form data
-    const formData = new FormData();
+    const formData = new CustomFormData();
     formData.append("photo", {
       uri: imageUri,
       type: "image/webp",
@@ -156,20 +158,18 @@ export const updateProfilePhoto = async (imageUri: string, name: string) => {
     } as any);
 
     const token = await getToken({ key: "session" });
-    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/mobile`, {
-      method: "POST",
+    const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/mobile`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
       },
-      body: formData,
     });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error("Failed to update profile photo");
     }
 
-    const data = await response.json();
-    return data; // This should return the new photo URL and ID
+    return response.data; // This should return the new photo URL and ID
   } catch (error) {
     console.error("Error updating profile photo:", error);
     throw error;

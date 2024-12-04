@@ -38,7 +38,7 @@ interface SetupFormData {
   confirmPassword: string;
 }
 const SignIn = () => {
-  const { setUser } = useGlobalContext();
+  const { setUser, refetchData } = useGlobalContext();
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [value, setValue] = useState<string>("");
@@ -99,6 +99,7 @@ const SignIn = () => {
           value: response.token,
         });
         setUser(response.user);
+        refetchData();
         router.replace("/home");
       }
     } catch (error) {

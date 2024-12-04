@@ -35,6 +35,7 @@ import ProfileImagePicker from "@/components/profile-image-picker";
 
 const Profile = () => {
   const {
+    user,
     setUser,
     isLoading,
     setIsLoggedIn,
@@ -72,6 +73,7 @@ const Profile = () => {
   const logout = async () => {
     await removeToken({ key: "session" });
     setUser(null);
+    setCompleteUserData(null);
     setIsLoggedIn(false);
     router.replace("/sign-in");
   };
@@ -191,7 +193,9 @@ const Profile = () => {
 
           {/* Profile Header */}
           <ProfileImagePicker
-            currentPhotoUrl={completeUserData?.photoUrl || null}
+            currentPhotoUrl={
+              completeUserData?.photoUrl || user?.photoUrl || null
+            }
             onImageSelected={handleImageSelected}
             name={completeUserData?.name || ""}
             createdAt={
