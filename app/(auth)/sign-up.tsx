@@ -2,6 +2,7 @@ import ContactInfoForm from "@/components/contact-info-form";
 import GradientBackground from "@/components/gradient-background";
 import PersonalInfoForm from "@/components/personal-info-form";
 import ProfessionalInfoForm from "@/components/professional-info-form";
+import UploadPhotoForm from "@/components/upload-photo-form";
 import images from "@/constants/images";
 import {
   BloodGroup,
@@ -182,6 +183,7 @@ const SignUp = () => {
                       <UploadPhotoForm
                         handleNext={() => handleNext(4)}
                         handlePrevious={() => setStep(3)}
+                        error={error}
                       />
                     )}
                     <View className="flex-row justify-center items-center">
