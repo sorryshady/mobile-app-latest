@@ -266,7 +266,7 @@ const SignIn = () => {
             keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
             className="flex-1"
           >
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
               <View className="items-center p-6 gap-5">
                 <Image
                   source={images.logo}

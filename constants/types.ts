@@ -165,3 +165,10 @@ export type PersonalDetails = {
   gender: Gender | null;
   bloodGroup: BloodGroup | null;
 };
+export type ProfessionalDetails = {
+  userStatus: UserStatus | null;
+  department: Department | null;
+  designation: Designation | null;
+  officeAddress: string;
+  workDistrict: District | null;
+};

@@ -37,7 +37,7 @@ const PersonalInfoForm = ({
         placeholder="Enter your date of birth"
         value={personalDetails.dob}
         handleChangeText={(e: string) =>
-          setPersonalDetails({ ...personalDetails, name: e })
+          setPersonalDetails({ ...personalDetails, dob: e })
         }
       />
       <CustomDropDown

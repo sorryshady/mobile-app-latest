@@ -6,16 +6,6 @@ interface Data {
   label: string;
   value: string;
 }
-const data: Data[] = [
-  { label: "Item 1", value: "1" },
-  { label: "Item 2", value: "2" },
-  { label: "Item 3", value: "3" },
-  { label: "Item 4", value: "4" },
-  { label: "Item 5", value: "5" },
-  { label: "Item 6", value: "6" },
-  { label: "Item 7", value: "7" },
-  { label: "Item 8", value: "8" },
-];
 interface Props {
   placeholder?: string;
   data: Data[];
@@ -28,23 +18,13 @@ const CustomDropDown = ({
   value,
   handleValueChange,
 }: Props) => {
-  //   const [value, setValue] = useState<string | null>(null);
   const [isFocus, setIsFocus] = useState(false);
-
-  const renderLabel = () => {
-    if (value || isFocus) {
-      return (
-        <Text className="absolute bg-transparent text-black font-pmedium left-0 top-0 z-[999] text-[14px]">
-          {placeholder}
-        </Text>
-      );
-    }
-    return null;
-  };
 
   return (
     <View className="relative w-full pt-8 bg-transparent">
-      {renderLabel()}
+      <Text className="absolute bg-transparent text-black font-pmedium left-0 top-0 z-[999] text-[14px]">
+        {placeholder}
+      </Text>
       <Dropdown
         style={styles.dropdown}
         placeholderStyle={styles.placeholderStyle}
@@ -56,7 +36,7 @@ const CustomDropDown = ({
         maxHeight={200}
         labelField="label"
         valueField="value"
-        placeholder={!isFocus ? `Select ${placeholder}` : "Select item"}
+        placeholder={!isFocus ? `Select ${placeholder}` : ""}
         value={value}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
