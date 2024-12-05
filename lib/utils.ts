@@ -21,3 +21,19 @@ export const changeTypeToText = (value: string) => {
       date.getDate() === day
     );
   };
+
+export const isValidMobileNumber = (mobileNumber: string) => {
+  const regex = /^[6-9]\d{9}$/; // Indian mobile numbers start with 6-9 and are 10 digits long
+  return regex.test(mobileNumber);
+};
+
+export const isValidEmail = (email: string) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+};
+
+export const isValidPhoneNumber = (phoneNumber: string) => {
+  const regexMobile = /^\d{10}$/; // Validates 10-digit mobile numbers
+  const regexLandline = /^\d{3,4}-\d{7}$/; // Validates landline numbers with a 3 or 4 digit area code followed by 7 digits
+  return regexMobile.test(phoneNumber) || regexLandline.test(phoneNumber);
+};

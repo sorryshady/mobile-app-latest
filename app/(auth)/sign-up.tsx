@@ -1,9 +1,11 @@
+import ContactInfoForm from "@/components/contact-info-form";
 import GradientBackground from "@/components/gradient-background";
 import PersonalInfoForm from "@/components/personal-info-form";
 import ProfessionalInfoForm from "@/components/professional-info-form";
 import images from "@/constants/images";
 import {
   BloodGroup,
+  ContactDetails,
   Department,
   Designation,
   District,
@@ -13,7 +15,12 @@ import {
   RegistrationStep,
   UserStatus,
 } from "@/constants/types";
-import { isValidDate } from "@/lib/utils";
+import {
+  isValidDate,
+  isValidEmail,
+  isValidMobileNumber,
+  isValidPhoneNumber,
+} from "@/lib/utils";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -46,6 +53,13 @@ const SignUp = () => {
       officeAddress: "",
       workDistrict: null,
     });
+  const [contactDetails, setContactDetails] = useState<ContactDetails>({
+    personalAddress: "",
+    homeDistrict: null,
+    email: "",
+    phoneNumber: "",
+    mobileNumber: "",
+  });
   const handleNext = (step: RegistrationStep) => {
     switch (step) {
       case 1:
@@ -81,19 +95,48 @@ const SignUp = () => {
           setError("Please fill all the fields");
         }
         break;
+      case 3:
+        if (
+          contactDetails.personalAddress.length > 0 &&
+          contactDetails.homeDistrict &&
+          contactDetails.email.length > 0 &&
+          contactDetails.mobileNumber.length > 0
+        ) {
+          if (!isValidEmail(contactDetails.email)) {
+            setError("Invalid email");
+          } else if (!isValidMobileNumber(contactDetails.mobileNumber)) {
+            setError("Invalid mobile number");
+          } else if (
+            contactDetails.phoneNumber &&
+            contactDetails.phoneNumber.length > 0 &&
+            !isValidPhoneNumber(contactDetails.phoneNumber)
+          ) {
+            setError("Invalid phone number");
+          } else {
+            setError("");
+            setStep(4);
+          }
+        } else {
+          setError("Please fill all the fields");
+        }
+        break;
     }
   };
   return (
-    <SafeAreaView className="h-full relative">
+    <SafeAreaView className="flex-1">
       <GradientBackground>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
-            className="flex-1"
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
+          keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
+        >
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyboardShouldPersistTaps="handled"
           >
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View className="items-center p-6 gap-5">
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View className="flex-1 items-center p-6 gap-5">
                 <Image
                   source={images.logo}
                   className="w-[150px] h-[150px]"
@@ -127,12 +170,18 @@ const SignUp = () => {
                       />
                     )}
                     {step === 3 && (
-                      <ProfessionalInfoForm
-                        professionalDetails={professionalDetails}
-                        setProfessionalDetails={setProfessionalDetails}
-                        handleNext={() => handleNext(2)}
-                        handlePrevious={() => setStep(1)}
+                      <ContactInfoForm
+                        contactDetails={contactDetails}
+                        setContactDetails={setContactDetails}
+                        handleNext={() => handleNext(3)}
+                        handlePrevious={() => setStep(2)}
                         error={error}
+                      />
+                    )}
+                    {step === 4 && (
+                      <UploadPhotoForm
+                        handleNext={() => handleNext(4)}
+                        handlePrevious={() => setStep(3)}
                       />
                     )}
                     <View className="flex-row justify-center items-center">
@@ -151,9 +200,9 @@ const SignUp = () => {
                   </View>
                 </View>
               </View>
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </GradientBackground>
     </SafeAreaView>
   );

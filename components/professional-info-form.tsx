@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import React from "react";
 import {
   ProfessionalDetails,
@@ -47,7 +47,7 @@ const ProfessionalInfoForm = ({
         <>
           <CustomDropDown
             data={Object.values(Department).map((department) => ({
-              label: changeTypeToText(department),
+              label: department,
               value: department,
             }))}
             placeholder="Department"

@@ -172,3 +172,10 @@ export type ProfessionalDetails = {
   officeAddress: string;
   workDistrict: District | null;
 };
+export type ContactDetails = {
+  personalAddress: string;
+  homeDistrict: District | null;
+  email: string;
+  phoneNumber?: string;
+  mobileNumber: string;
+};
