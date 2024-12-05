@@ -128,10 +128,13 @@ const SignUp = () => {
         }
         break;
       case 4:
-        console.log("Personal Information: ", personalDetails);
-        console.log("Professional Information: ", professionalDetails);
-        console.log("Contact Information: ", contactDetails);
-        console.log("Profile Photo: ", profilePhoto);
+        const userData = {
+          personalDetails,
+          professionalDetails,
+          contactDetails,
+          profilePhoto,
+        };
+        console.log("User Data: ", userData);
     }
   };
   return (
