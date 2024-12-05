@@ -157,3 +157,11 @@ export type RequestResponse = {
   adminComments: string;
   showAgain: boolean;
 };
+
+export type RegistrationStep = 1 | 2 | 3 | 4;
+export type PersonalDetails = {
+  name: string;
+  dob: string;
+  gender: Gender | null;
+  bloodGroup: BloodGroup | null;
+};

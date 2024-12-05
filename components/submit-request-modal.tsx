@@ -14,13 +14,11 @@ import {
   District,
   Designation,
   TransferRequest,
-  CompleteUser,
   PromotionRequest,
   RetirementRequest,
   Request,
 } from "@/constants/types";
-import { changeTypeToText } from "@/lib/utils";
-import { getToken } from "@/lib/handle-session-tokens";
+import { changeTypeToText, isValidDate } from "@/lib/utils";
 import { submitRequest } from "@/api/user";
 import SuccessMessage from "./success-message";
 import { useGlobalContext } from "@/context/global-provider";
@@ -104,8 +102,13 @@ const SubmitRequestModal = ({ visible, onClose }: Props) => {
           break;
 
         case "RETIREMENT":
-          if (!retirementData.retirementDate) {
-            throw new Error("Retirement date is required");
+          if (
+            !retirementData.retirementDate ||
+            !isValidDate(retirementData.retirementDate)
+          ) {
+            throw new Error(
+              "Retirement date is required and must be in DD/MM/YYYY format",
+            );
           }
           requestData = {
             requestType: "RETIREMENT",

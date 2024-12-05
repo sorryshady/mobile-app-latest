@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 
 interface Data {
@@ -64,6 +64,9 @@ const CustomDropDown = ({
           handleValueChange(item.value);
           setIsFocus(false);
         }}
+        dropdownPosition={
+          isFocus ? (Platform.OS === "ios" ? "top" : "auto") : "auto"
+        }
       />
     </View>
   );
@@ -76,6 +79,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 14,
     marginTop: 5,
+    overflow: "hidden",
+    boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.1)",
   },
   itemContainerStyle: {
     borderRadius: 14,

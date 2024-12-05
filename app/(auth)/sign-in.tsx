@@ -326,6 +326,19 @@ const SignIn = () => {
                           : renderSetupStep()}
                       </View>
                     )}
+                    <View className="flex-row justify-center items-center">
+                      <Text className="text-black font-semibold">
+                        Don't have an account?{" "}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => router.push("/sign-up")}
+                        className="ml-1" // Added margin to separate from the text
+                      >
+                        <Text className="text-blue-500 font-semibold">
+                          Register
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               </View>
