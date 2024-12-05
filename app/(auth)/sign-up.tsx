@@ -13,6 +13,7 @@ import {
   Gender,
   PersonalDetails,
   ProfessionalDetails,
+  ProfilePhoto,
   RegistrationStep,
   UserStatus,
 } from "@/constants/types";
@@ -39,7 +40,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const SignUp = () => {
   const [error, setError] = useState<string>("");
-  const [step, setStep] = useState<RegistrationStep>(4);
+  const [step, setStep] = useState<RegistrationStep>(1);
   const [personalDetails, setPersonalDetails] = useState<PersonalDetails>({
     name: "",
     dob: "",
@@ -61,6 +62,11 @@ const SignUp = () => {
     phoneNumber: "",
     mobileNumber: "",
   });
+  const [profilePhoto, setProfilePhoto] = useState<ProfilePhoto>({
+    photoUrl: "",
+    photoId: "",
+  });
+
   const handleNext = (step: RegistrationStep) => {
     switch (step) {
       case 1:
@@ -121,6 +127,11 @@ const SignUp = () => {
           setError("Please fill all the fields");
         }
         break;
+      case 4:
+        console.log("Personal Information: ", personalDetails);
+        console.log("Professional Information: ", professionalDetails);
+        console.log("Contact Information: ", contactDetails);
+        console.log("Profile Photo: ", profilePhoto);
     }
   };
   return (
@@ -182,6 +193,8 @@ const SignUp = () => {
                     {step === 4 && (
                       <UploadPhotoForm
                         userName={personalDetails.name}
+                        profilePhoto={profilePhoto}
+                        setProfilePhoto={setProfilePhoto}
                         handleNext={() => handleNext(4)}
                         handlePrevious={() => setStep(3)}
                         error={error}

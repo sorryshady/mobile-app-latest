@@ -33,7 +33,7 @@ export const isValidEmail = (email: string) => {
 };
 
 export const isValidPhoneNumber = (phoneNumber: string) => {
-  const regexMobile = /^\d{10}$/; // Validates 10-digit mobile numbers
+  const regexMobile = /^\d{10,11}$/; // Validates 10-digit mobile numbers
   const regexLandline = /^\d{3,4}-\d{7}$/; // Validates landline numbers with a 3 or 4 digit area code followed by 7 digits
   return regexMobile.test(phoneNumber) || regexLandline.test(phoneNumber);
 };

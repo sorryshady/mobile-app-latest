@@ -57,7 +57,7 @@ const PersonalInfoForm = ({
       <CustomDropDown
         placeholder="Blood Group"
         data={Object.values(BloodGroup).map((bloodGroup) => ({
-          label: changeTypeToText(bloodGroup),
+          label: bloodGroup.replace("_POS", " +ve").replace("_NEG", " -ve"),
           value: bloodGroup,
         }))}
         value={personalDetails.bloodGroup ?? ""}

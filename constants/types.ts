@@ -21,14 +21,14 @@ export enum Gender {
 }
 
 export enum BloodGroup {
-  A_POS = "A_POSITIVE",
-  A_NEG = "A_NEGATIVE",
-  B_POS = "B_POSITIVE",
-  B_NEG = "B_NEGATIVE",
-  AB_POS = "AB_POSITIVE",
-  AB_NEG = "AB_NEGATIVE",
-  O_POS = "O_POSITIVE",
-  O_NEG = "O_NEGATIVE",
+  A_POS = "A_POS",
+  A_NEG = "A_NEG",
+  B_POS = "B_POS",
+  B_NEG = "B_NEG",
+  AB_POS = "AB_POS",
+  AB_NEG = "AB_NEG",
+  O_POS = "O_POS",
+  O_NEG = "O_NEG",
 }
 
 export enum UserStatus {
@@ -178,4 +178,9 @@ export type ContactDetails = {
   email: string;
   phoneNumber?: string;
   mobileNumber: string;
+};
+
+export type ProfilePhoto = {
+  photoUrl?: string;
+  photoId?: string;
 };

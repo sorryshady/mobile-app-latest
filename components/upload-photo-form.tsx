@@ -2,22 +2,27 @@ import { Alert, Modal, Platform, Text, View, Image } from "react-native";
 import React, { useState } from "react";
 import ErrorMessage from "./error-message";
 import CustomButton from "./custom-button";
-import { RegistrationStep } from "@/constants/types";
+import { RegistrationStep, ProfilePhoto } from "@/constants/types";
 import { pickImage, takePhoto } from "@/lib/image-uploads";
 import SuccessMessage from "./success-message";
+import { uploadProfilePhoto } from "@/api/user";
 
 interface Props {
   handleNext: (step: RegistrationStep) => void;
   handlePrevious: () => void;
   error: string;
   userName: string;
+  profilePhoto: ProfilePhoto;
+  setProfilePhoto: (profilePhoto: ProfilePhoto) => void;
 }
 
 const UploadPhotoForm = ({
   handleNext,
   handlePrevious,
   error,
-  userName,
+  userName = `Test User ${Math.floor(Math.random() * 10000)}`,
+  profilePhoto,
+  setProfilePhoto,
 }: Props) => {
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -44,8 +49,18 @@ const UploadPhotoForm = ({
       setIsLoading(true);
       // Add your image upload logic here
       console.log("Confirming image:", selectedImage);
-      // After successful upload:
-      setSuccess(true);
+      if (selectedImage) {
+        const response = await uploadProfilePhoto(selectedImage, userName);
+        setProfilePhoto({
+          photoUrl: response.photoUrl,
+          photoId: response.photoId,
+        });
+        // After successful upload:
+        setSuccess(true);
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
+      }
     } catch (error) {
       console.error("Error confirming image:", error);
       Alert.alert("Error", "Failed to upload image");
@@ -60,31 +75,35 @@ const UploadPhotoForm = ({
 
   return (
     <View className="gap-4">
-      <Text className="text-base font-pmedium">Upload Photo</Text>
+      <Text className="text-base font-pmedium mb-[1rem]">
+        Upload Photo (optional)
+      </Text>
 
       {selectedImage ? (
         <View className="items-center gap-4">
           <Image
             source={{ uri: selectedImage }}
-            className="w-32 h-32 rounded-full"
+            className="w-32 h-32 rounded-full mb-[1rem]"
             resizeMode="cover"
           />
-          <View className="flex-row gap-4 w-full">
-            <CustomButton
-              title="Cancel"
-              handlePress={handleCancel}
-              containerStyles=" flex-1"
-              textStyles="text-red-500"
-            />
-            <CustomButton
-              title="Confirm"
-              handlePress={handleConfirm}
-              loadingText="Uploading..."
-              isLoading={isLoading}
-              containerStyles=" flex-1"
-              textStyles="text-green-500"
-            />
-          </View>
+          {!profilePhoto.photoUrl && (
+            <View className="flex-row gap-4 w-full">
+              <CustomButton
+                title="Cancel"
+                handlePress={handleCancel}
+                containerStyles=" flex-1"
+                textStyles="text-red-500"
+              />
+              <CustomButton
+                title="Confirm"
+                handlePress={handleConfirm}
+                loadingText="Uploading..."
+                isLoading={isLoading}
+                containerStyles=" flex-1"
+                textStyles="text-emerald-500"
+              />
+            </View>
+          )}
         </View>
       ) : (
         <View className="w-full h-[100px] flex-1 items-center justify-center">
@@ -111,6 +130,7 @@ const UploadPhotoForm = ({
           title="Next"
           containerStyles="w-fit px-4 bg-[#1F333E] flex-1"
           textStyles="text-white"
+          isLoading={isLoading}
           handlePress={() => handleNext(4)}
         />
       </View>
