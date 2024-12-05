@@ -169,18 +169,37 @@ export type ProfessionalDetails = {
   userStatus: UserStatus | null;
   department: Department | null;
   designation: Designation | null;
-  officeAddress: string;
+  officeAddress: string ;
   workDistrict: District | null;
 };
 export type ContactDetails = {
   personalAddress: string;
   homeDistrict: District | null;
   email: string;
-  phoneNumber?: string;
+  phoneNumber: string | null;
   mobileNumber: string;
 };
 
 export type ProfilePhoto = {
-  photoUrl?: string;
-  photoId?: string;
+  photoUrl: string | null;
+  photoId: string | null;
+};
+
+export type RegisterFormData = {
+  name: string;
+  dob: string;
+  gender: Gender;
+  bloodGroup: BloodGroup;
+  userStatus: UserStatus;
+  department: Department | undefined;
+  designation: Designation | undefined;
+  officeAddress: string | undefined;
+  workDistrict: District | undefined;
+  personalAddress: string;
+  homeDistrict: District ;
+  email: string;
+  phoneNumber?: string | undefined;
+  mobileNumber: string;
+  photoUrl?: string | undefined;
+  photoId?: string | undefined;
 };

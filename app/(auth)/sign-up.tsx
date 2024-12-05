@@ -1,21 +1,18 @@
+import { registerUser } from "@/api/register";
 import ContactInfoForm from "@/components/contact-info-form";
 import GradientBackground from "@/components/gradient-background";
 import PersonalInfoForm from "@/components/personal-info-form";
 import ProfessionalInfoForm from "@/components/professional-info-form";
+import SuccessMessage from "@/components/success-message";
 import UploadPhotoForm from "@/components/upload-photo-form";
 import images from "@/constants/images";
 import {
-  BloodGroup,
   ContactDetails,
-  Department,
-  Designation,
-  District,
-  Gender,
   PersonalDetails,
   ProfessionalDetails,
   ProfilePhoto,
+  RegisterFormData,
   RegistrationStep,
-  UserStatus,
 } from "@/constants/types";
 import {
   isValidDate,
@@ -40,6 +37,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const SignUp = () => {
   const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [step, setStep] = useState<RegistrationStep>(1);
   const [personalDetails, setPersonalDetails] = useState<PersonalDetails>({
     name: "",
@@ -63,11 +62,11 @@ const SignUp = () => {
     mobileNumber: "",
   });
   const [profilePhoto, setProfilePhoto] = useState<ProfilePhoto>({
-    photoUrl: "",
-    photoId: "",
+    photoUrl: null,
+    photoId: null,
   });
 
-  const handleNext = (step: RegistrationStep) => {
+  const handleNext = async (step: RegistrationStep) => {
     switch (step) {
       case 1:
         if (
@@ -128,13 +127,32 @@ const SignUp = () => {
         }
         break;
       case 4:
-        const userData = {
-          personalDetails,
-          professionalDetails,
-          contactDetails,
-          profilePhoto,
+        const userData: RegisterFormData = {
+          name: personalDetails.name,
+          dob: personalDetails.dob,
+          gender: personalDetails.gender!,
+          bloodGroup: personalDetails.bloodGroup!,
+          userStatus: professionalDetails.userStatus!,
+          department: professionalDetails?.department || undefined,
+          designation: professionalDetails?.designation || undefined,
+          officeAddress: professionalDetails?.officeAddress || "",
+          workDistrict: professionalDetails?.workDistrict || undefined,
+          personalAddress: contactDetails.personalAddress,
+          homeDistrict: contactDetails.homeDistrict!,
+          email: contactDetails.email,
+          phoneNumber: contactDetails?.phoneNumber || undefined,
+          mobileNumber: contactDetails.mobileNumber,
+          photoUrl: profilePhoto?.photoUrl || undefined,
+          photoId: profilePhoto?.photoId || undefined,
         };
-        console.log("User Data: ", userData);
+        setIsLoading(true);
+        const response = await registerUser(userData);
+        setIsLoading(false);
+        if (response.error) {
+          setError(response.error);
+        } else {
+          setSuccess(response.message);
+        }
     }
   };
   return (
@@ -167,41 +185,50 @@ const SignUp = () => {
                     <Text className="text-black text-center font-psemibold text-2xl mt-5">
                       Sign Up
                     </Text>
-                    {step === 1 && (
-                      <PersonalInfoForm
-                        personalDetails={personalDetails}
-                        setPersonalDetails={setPersonalDetails}
-                        handleNext={() => handleNext(1)}
-                        error={error}
-                      />
-                    )}
-                    {step === 2 && (
-                      <ProfessionalInfoForm
-                        professionalDetails={professionalDetails}
-                        setProfessionalDetails={setProfessionalDetails}
-                        handleNext={() => handleNext(2)}
-                        handlePrevious={() => setStep(1)}
-                        error={error}
-                      />
-                    )}
-                    {step === 3 && (
-                      <ContactInfoForm
-                        contactDetails={contactDetails}
-                        setContactDetails={setContactDetails}
-                        handleNext={() => handleNext(3)}
-                        handlePrevious={() => setStep(2)}
-                        error={error}
-                      />
-                    )}
-                    {step === 4 && (
-                      <UploadPhotoForm
-                        userName={personalDetails.name}
-                        profilePhoto={profilePhoto}
-                        setProfilePhoto={setProfilePhoto}
-                        handleNext={() => handleNext(4)}
-                        handlePrevious={() => setStep(3)}
-                        error={error}
-                      />
+                    {!success ? (
+                      <>
+                        {step === 1 && (
+                          <PersonalInfoForm
+                            personalDetails={personalDetails}
+                            setPersonalDetails={setPersonalDetails}
+                            handleNext={() => handleNext(1)}
+                            error={error}
+                          />
+                        )}
+                        {step === 2 && (
+                          <ProfessionalInfoForm
+                            professionalDetails={professionalDetails}
+                            setProfessionalDetails={setProfessionalDetails}
+                            handleNext={() => handleNext(2)}
+                            handlePrevious={() => setStep(1)}
+                            error={error}
+                          />
+                        )}
+                        {step === 3 && (
+                          <ContactInfoForm
+                            contactDetails={contactDetails}
+                            setContactDetails={setContactDetails}
+                            handleNext={() => handleNext(3)}
+                            handlePrevious={() => setStep(2)}
+                            error={error}
+                          />
+                        )}
+                        {step === 4 && (
+                          <UploadPhotoForm
+                            userName={personalDetails.name}
+                            profilePhoto={profilePhoto}
+                            setProfilePhoto={setProfilePhoto}
+                            handleNext={() => handleNext(4)}
+                            handlePrevious={() => setStep(3)}
+                            error={error}
+                            isLoading={isLoading}
+                          />
+                        )}
+                      </>
+                    ) : (
+                      <View className="flex-1 items-center justify-center">
+                        <SuccessMessage message={success} />
+                      </View>
                     )}
                     <View className="flex-row justify-center items-center">
                       <Text className="text-black font-semibold">

@@ -76,7 +76,7 @@ const ProfessionalInfoForm = ({
           <FormField
             title="Office Address"
             placeholder="Office Address"
-            value={professionalDetails.officeAddress}
+            value={professionalDetails.officeAddress || ""}
             handleChangeText={(e) =>
               setProfessionalDetails({
                 ...professionalDetails,

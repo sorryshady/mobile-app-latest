@@ -180,31 +180,4 @@ export const updateProfilePhoto = async (imageUri: string, name: string) => {
   }
 };
 
-export const uploadProfilePhoto = async (imageUri: string, name: string) => {
-  try {
-    const formData = new CustomFormData();
-    formData.append("profile-photo", {
-      uri: imageUri,
-      type: "image/webp",
-      name: `${name}.webp`,
-    } as any);
 
-    const response = await axios.post(
-      `${process.env.EXPO_PUBLIC_API_URL}/mobile`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
-    );
-    if (response.status !== 200) {
-      throw new Error("Failed to upload profile photo");
-    }
-
-    return response.data;
-  } catch (error) {
-    console.error("Error updating profile photo:", error);
-    throw error;
-  }
-};

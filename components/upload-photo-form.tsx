@@ -5,7 +5,7 @@ import CustomButton from "./custom-button";
 import { RegistrationStep, ProfilePhoto } from "@/constants/types";
 import { pickImage, takePhoto } from "@/lib/image-uploads";
 import SuccessMessage from "./success-message";
-import { uploadProfilePhoto } from "@/api/user";
+import { uploadProfilePhoto } from "@/api/register";
 
 interface Props {
   handleNext: (step: RegistrationStep) => void;
@@ -14,6 +14,7 @@ interface Props {
   userName: string;
   profilePhoto: ProfilePhoto;
   setProfilePhoto: (profilePhoto: ProfilePhoto) => void;
+  isLoading: boolean;
 }
 
 const UploadPhotoForm = ({
@@ -23,6 +24,7 @@ const UploadPhotoForm = ({
   userName = `Test User ${Math.floor(Math.random() * 10000)}`,
   profilePhoto,
   setProfilePhoto,
+  isLoading: submitLoading,
 }: Props) => {
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -119,19 +121,22 @@ const UploadPhotoForm = ({
       {error && <ErrorMessage error={error} />}
       {success && <SuccessMessage message="Photo uploaded successfully" />}
 
-      <View className="flex flex-row justify-between gap-32">
+      <View className="flex flex-row justify-between">
         <CustomButton
           title="Previous"
-          containerStyles="w-fit px-4 bg-white border border-[#1F333E] flex-1"
+          containerStyles="w-fit px-4 bg-white border border-[#1F333E] min-w-[100px]"
           textStyles="text-[#1F333E]"
           handlePress={handlePrevious}
         />
         <CustomButton
           title="Next"
-          containerStyles="w-fit px-4 bg-[#1F333E] flex-1"
+          containerStyles="w-fit px-4 bg-[#1F333E] min-w-[100px]"
           textStyles="text-white"
-          isLoading={isLoading}
-          handlePress={() => handleNext(4)}
+          isLoading={isLoading || submitLoading}
+          handlePress={() => {
+            setSuccess(false);
+            handleNext(4);
+          }}
         />
       </View>
 

@@ -47,6 +47,7 @@ const ContactInfoForm = ({
       <FormField
         placeholder="Enter your email"
         title="Email"
+        keyboardType="email-address"
         value={contactDetails.email}
         handleChangeText={(e) =>
           setContactDetails({ ...contactDetails, email: e })
@@ -55,6 +56,7 @@ const ContactInfoForm = ({
       <FormField
         placeholder="Enter your phone number"
         title="Phone Number (optional)"
+        keyboardType="phone-pad"
         value={contactDetails.phoneNumber || ""}
         handleChangeText={(e) =>
           setContactDetails({ ...contactDetails, phoneNumber: e })
@@ -63,6 +65,7 @@ const ContactInfoForm = ({
       <FormField
         placeholder="Enter your mobile number"
         title="Mobile Number"
+        keyboardType="phone-pad"
         value={contactDetails.mobileNumber || ""}
         handleChangeText={(e) =>
           setContactDetails({ ...contactDetails, mobileNumber: e })

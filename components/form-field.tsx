@@ -61,7 +61,7 @@ const FormField = ({
       <View className="border-2 border-black-200 w-full h-14 px-4 bg-white rounded-2xl focus:border-secondary flex-row items-center">
         <TextInput
           className="flex-1 text-black font-pmedium text-base h-full"
-          value={value}
+          value={value || undefined}
           placeholder={placeholder}
           placeholderTextColor={"#7b7b8b"}
           onChangeText={handleChangeText}
