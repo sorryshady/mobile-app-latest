@@ -39,7 +39,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const SignUp = () => {
   const [error, setError] = useState<string>("");
-  const [step, setStep] = useState<RegistrationStep>(1);
+  const [step, setStep] = useState<RegistrationStep>(4);
   const [personalDetails, setPersonalDetails] = useState<PersonalDetails>({
     name: "",
     dob: "",
@@ -181,6 +181,7 @@ const SignUp = () => {
                     )}
                     {step === 4 && (
                       <UploadPhotoForm
+                        userName={personalDetails.name}
                         handleNext={() => handleNext(4)}
                         handlePrevious={() => setStep(3)}
                         error={error}
