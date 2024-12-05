@@ -3,6 +3,7 @@ import ContactInfoForm from "@/components/contact-info-form";
 import GradientBackground from "@/components/gradient-background";
 import PersonalInfoForm from "@/components/personal-info-form";
 import ProfessionalInfoForm from "@/components/professional-info-form";
+import Steps from "@/components/steps";
 import SuccessMessage from "@/components/success-message";
 import UploadPhotoForm from "@/components/upload-photo-form";
 import images from "@/constants/images";
@@ -185,6 +186,9 @@ const SignUp = () => {
                     <Text className="text-black text-center font-psemibold text-2xl mt-5">
                       Sign Up
                     </Text>
+                    <View>
+                      <Steps currentStep={step} />
+                    </View>
                     {!success ? (
                       <>
                         {step === 1 && (
