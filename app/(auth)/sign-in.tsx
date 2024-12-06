@@ -179,6 +179,14 @@ const SignIn = () => {
         handleChangeText={(e: string) => setPassword(e)}
         type="password"
       />
+      <TouchableOpacity
+        onPress={() =>
+          router.replace(`/forgot-password?userId=${userDetails?.id}`)
+        }
+        className="self-end"
+      >
+        <Text className="text-blue-500 font-semibold">Forgot Password?</Text>
+      </TouchableOpacity>
       {error && <ErrorMessage error={error} />}
       <CustomButton
         title="Login"
@@ -307,7 +315,6 @@ const SignIn = () => {
                                   src={userDetails.photoUrl}
                                   alt={userDetails.name}
                                   className="w-full h-full"
-                                  style={{ transform: [{ scale: 0.9 }] }}
                                   resizeMode="cover"
                                 />
                               ) : (
