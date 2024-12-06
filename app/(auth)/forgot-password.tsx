@@ -2,7 +2,6 @@ import {
   Keyboard,
   SafeAreaView,
   Platform,
-  StyleSheet,
   Text,
   View,
   TouchableWithoutFeedback,
@@ -16,6 +15,7 @@ import images from "@/constants/images";
 import { router, useLocalSearchParams } from "expo-router";
 import { fetchSecurityQuestion } from "@/api/forgot-password";
 import SecurityQuestionForm from "@/components/security-question-form";
+import ErrorMessage from "@/components/error-message";
 
 const ForgotPassword = () => {
   const { userId }: { userId: string } = useLocalSearchParams();
@@ -88,6 +88,7 @@ const ForgotPassword = () => {
                           Loading user details, please wait...
                         </Text>
                       )}
+                      {error && <ErrorMessage error={error} />}
                       {userDetails && (
                         <SecurityQuestionForm
                           userDetails={userDetails}
@@ -107,5 +108,3 @@ const ForgotPassword = () => {
 };
 
 export default ForgotPassword;
-
-const styles = StyleSheet.create({});

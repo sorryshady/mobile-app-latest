@@ -59,7 +59,7 @@ export const resetPassword = async (userId: string, password: string) => {
     if (data.error) {
       return { error: data.error };
     }
-    return { success: true };
+    return data;
   } catch (error) {
     console.log(error);
     return { error: "Failed to reset password" };

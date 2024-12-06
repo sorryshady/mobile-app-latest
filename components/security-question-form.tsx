@@ -6,6 +6,8 @@ import CustomButton from "./custom-button";
 import { router } from "expo-router";
 import { resetPassword, verifySecurityAnswer } from "@/api/forgot-password";
 import SuccessMessage from "./success-message";
+import { setToken } from "@/lib/handle-session-tokens";
+import { useGlobalContext } from "@/context/global-provider";
 
 interface SecurityQuestionFormProps {
   userDetails: {
@@ -15,6 +17,7 @@ interface SecurityQuestionFormProps {
   };
   onBack: () => void;
 }
+
 const SecurityAnswerForm = ({
   userDetails,
   onBack,
@@ -84,6 +87,7 @@ const ResetPasswordForm = ({
 }: {
   userDetails: { id: string };
 }) => {
+  const { setUser, refetchData } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState("");
   const [password, setPassword] = useState("");
@@ -106,9 +110,17 @@ const ResetPasswordForm = ({
       if (response.error) {
         setFormError(response.error);
       } else {
+        if (response?.token) {
+          await setToken({
+            key: "session",
+            value: response.token,
+          });
+        }
+        setUser(response.user);
+        refetchData();
         setSuccess(true);
         setTimeout(() => {
-          router.replace("/sign-in");
+          router.replace("/home");
         }, 1500);
       }
     } catch (error) {
@@ -148,7 +160,7 @@ const ResetPasswordForm = ({
           />
         </>
       ) : (
-        <SuccessMessage message="Password reset successful. Redirecting to Sign In" />
+        <SuccessMessage message="Password reset successful. Logging you in..." />
       )}
     </View>
   );
